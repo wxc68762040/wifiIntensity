@@ -61,8 +61,5 @@ object SecureUtil {
       chars(random.nextInt(range))
     }.mkString("")
   }
-
-
-
-
+  
 }
