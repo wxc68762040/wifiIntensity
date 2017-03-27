@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: xerces:xercesImpl:2.11.0:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.coursier/cache/v1/http/angel0%3A8078/xerces/xercesImpl/2.11.0/xercesImpl-2.11.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.coursier/cache/v1/http/angel0%3A8078/xerces/xercesImpl/2.11.0/xercesImpl-2.11.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.coursier/cache/v1/http/angel0%3A8078/xerces/xercesImpl/2.11.0/xercesImpl-2.11.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
