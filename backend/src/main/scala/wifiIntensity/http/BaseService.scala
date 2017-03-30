@@ -31,8 +31,6 @@ trait BaseService extends JsonProtocol with SessionBase with CirceSupport{
 
   val appClientKeys: ActorRef
 
-  val unitManager: ActorRef
-
   private val log = LoggerFactory.getLogger("com.neo.sk.nyx.http.BaseService")
 
   lazy val regex = "(10.*|localhost|192.*|127.*)".r

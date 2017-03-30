@@ -1,14 +1,14 @@
 import org.scalajs.sbtplugin.ScalaJSPlugin.AutoImport.packageMinifiedJSDependencies
 
 
-val projectName = "nyx"
+val projectName = "wifiIntensity"
 val projectVersion = "1.1.0"
 val scalaV = "2.11.8"
 
 
 val scalaXmlV = "1.0.6"
-val akkaV = "2.4.16"
-val akkaHttpV = "10.0.0"
+val akkaV = "2.4.17"
+val akkaHttpV = "10.0.5"
 val hikariCpV = "2.5.1"
 val slickV = "3.1.1"
 val logbackV = "1.1.7"
