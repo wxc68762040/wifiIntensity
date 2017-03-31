@@ -6,11 +6,10 @@ import akka.routing.RoundRobinPool
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import org.slf4j.LoggerFactory
-import wifiIntensity.core.WsClient
+import wifiIntensity.core.{BoxManager, WsClient}
 import wifiIntensity.http.HttpService
 import wifiIntensity.utils.AppClientKeys
 import wifiIntensity.common.AppSettings._
-
 
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
@@ -23,7 +22,7 @@ object Boot extends HttpService {
 
   override val log = LoggerFactory.getLogger(this.getClass)
 
-  override implicit val system = ActorSystem("nyx2")
+  override implicit val system = ActorSystem("wifiIntensity")
   override implicit val executor = system.dispatchers.lookup("akka.actor.my-blocking-dispatcher")
   override implicit val materializer = ActorMaterializer()
 
@@ -31,8 +30,7 @@ object Boot extends HttpService {
 
   override val appClientKeys: ActorRef = system.actorOf(AppClientKeys.props, "AppClientKeys")
   val wsClient = system.actorOf(WsClient.props(system,materializer,executor),"WsClient")
-//  val storeRouter = system.actorOf(RoundRobinPool(5).props(Props[Storer]), "StoreRouter")
-//  override val unitManager = system.actorOf(UnitManager.props(wsClient, storeRouter), "UnitManager")
+  override val boxManager = system.actorOf(BoxManager.props(wsClient), "BoxManager")
 
 
   def main(args: Array[String]) {
