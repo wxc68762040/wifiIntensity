@@ -56,6 +56,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 	def init: Receive = {
 		case InitDone(boxList) =>
 			context.setReceiveTimeout(Duration.Undefined)
+			log.info(s"get init done signal, boxList size: ${boxList.size}")
 			boxList.foreach { e =>
 				val actor = getBoxWorker(e._1, e._2, e._3)
 				wsClient ! SubscribeData(actor, e._1)

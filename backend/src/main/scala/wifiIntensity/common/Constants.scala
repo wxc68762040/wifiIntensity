@@ -6,9 +6,9 @@ package wifiIntensity.common
 object Constants {
 
   object Routes {
-    val apiRoutes = "/nyx2/api"
-    val adminRoutes = "/nyx2/admin"
-    val testRoutes = "/nyx2/test"
+    val apiRoutes = "/wifiIntensity/api"
+    val adminRoutes = "/wifiIntensity/admin"
+    val testRoutes = "/wifiIntensity/test"
 
   }
 

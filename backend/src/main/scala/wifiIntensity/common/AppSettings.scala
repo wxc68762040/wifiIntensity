@@ -54,10 +54,6 @@ object AppSettings {
   val slickIdleTimeout = slickConfig.getInt("idleTimeout")
   val slickMaxLifetime = slickConfig.getInt("maxLifetime")
 
-  //文件存储地点
-  val dataPath = config.getString("app.upgradePath")
-  log.info(s"dataPath=${new File(dataPath).getAbsolutePath}")
-
   val appSecureMap = {
     import collection.JavaConversions._
     val appIdList = appConfig.getStringList("client.appIds")
@@ -66,13 +62,6 @@ object AppSettings {
     appIdList.zip(secureKeys).toMap
   }
 
-  val oneDurationLength = config.getInt("app.oneDurationMinutes") * 60 * 1000
-  val visitDurationLength = config.getInt("app.visitDurationMinutes") * 60 * 1000
-  val realTimeDurationLength =  config.getInt("app.realTimeDurationMinutes") * 60 * 1000
-  val realTimeCountInterval = config.getInt("app.realTimeIntervalMinutes") * 60 * 1000
-  val historyCountInterval = config.getInt("app.historyIntervalMinutes") * 60 * 1000
-  val stayInDurationLength = config.getInt("app.stayInDurationMinutes") * 60 * 1000
-  val rssiSet = config.getInt("app.rssiSet")
 
   val sessionConfig = {
     val sConf = config.getConfig("session")
@@ -90,8 +79,8 @@ object AppSettings {
 
 
 
-  val username = appConfig.getString("login.username")
-  val password = appConfig.getString("login.password")
+//  val username = appConfig.getString("login.username")
+//  val password = appConfig.getString("login.password")
 
 
 }

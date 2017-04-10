@@ -1,6 +1,6 @@
 package wifiIntensity.protocol
 
-import com.neo.sk.nyx.ptcl.CommonRsp
+import wifiIntensity.ptcl.CommonRsp
 
 /**
   * Created by ZYQ on 2016/12/13.

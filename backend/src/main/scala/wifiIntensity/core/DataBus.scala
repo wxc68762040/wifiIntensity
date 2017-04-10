@@ -4,7 +4,6 @@ import akka.actor.ActorRef
 import akka.event.{EventBus, SubchannelClassification}
 import akka.util.Subclassification
 import wifiIntensity.protocol.PutShoots
-//import com.neo.sk.nyx.protocol.NyxActorProtocol
 
 /**
   * Created by liuziwei on 2016/7/10.

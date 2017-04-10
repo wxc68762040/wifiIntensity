@@ -27,19 +27,22 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Acto
 	
 	override def preStart = {
 		log.info(s"$logPrefix is now starting.")
+		log.info(s"$logPrefix's father is ${context.parent.path.name}")
 	}
 	
 	override def postStop = {
 		log.info(s"$logPrefix is stopped.")
+		context.parent ! SaveRequest(shootBuffer.toList)
 	}
 	
 	override def receive = working
 	
 	def working: Receive = {
 		case PutShoots(_, shoots) =>
-			val validShoots = shoots.filter(e => e.rssi(0) > rssiSet && e.rssi(1) > rssiSet).map {e =>
-				rBasicShoot(-1L, boxMac, e.clientMac, e.t, e.rssi(0), e.rssi(1), getDistanceRatio(e.rssi(0), e.rssi(1), distanceLoss))
+			val validShoots = shoots.filter(e => Math.abs(e.rssi(0)) > rssiSet && Math.abs(e.rssi(1)) > rssiSet).map {e =>
+				rBasicShoot(-1L, boxMac, e.clientMac, e.t, Math.abs(e.rssi(0)), Math.abs(e.rssi(1)), getDistanceRatio(e.rssi(0), e.rssi(1), distanceLoss))
 			}
+			log.info(s"$boxMac get shoots, after filter, size: ${validShoots.size}")
 			shootBuffer ++= validShoots
 			if(shootBuffer.size >= 100) {
 				context.parent ! SaveRequest(shootBuffer.toList)

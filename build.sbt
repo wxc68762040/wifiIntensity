@@ -29,7 +29,7 @@ val playJsonForAkkaHttp = "1.7.0"
 
 val diodeV = "1.1.0"
 
-val projectMainClass = "com.neo.sk.nyx.Boot"
+val projectMainClass = "wifiIntensity.Boot"
 
 def commonSettings = Seq(
   version := projectVersion,
@@ -92,9 +92,9 @@ lazy val backend = (project in file("backend"))
     // If you need to specify main classes manually, use packSettings and packMain
     packSettings,
     // [Optional] Creating `hello` command that calls org.mydomain.Hello#main(Array[String])
-    packMain := Map("nyx" -> projectMainClass),
-    packJvmOpts := Map("nyx" -> Seq("-Xmx2048m", "-Xms1024m")),
-    packExtraClasspath := Map("nyx" -> Seq("."))
+    packMain := Map("wifiIntensity" -> projectMainClass),
+    packJvmOpts := Map("wifiIntensity" -> Seq("-Xmx2048m", "-Xms1024m")),
+    packExtraClasspath := Map("wifiIntensity" -> Seq("."))
   )
   .settings(
     libraryDependencies ++= Seq(

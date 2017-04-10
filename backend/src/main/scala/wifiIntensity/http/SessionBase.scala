@@ -15,8 +15,8 @@ import scala.util.Try
 object SessionBase {
 
   object SessionKeys {
-    val username = "nyx_username"
-    val timestamp = "nyx_timestamp"
+    val username = "username"
+    val timestamp = "timestamp"
   }
 
   val log = LoggerFactory.getLogger(this.getClass)

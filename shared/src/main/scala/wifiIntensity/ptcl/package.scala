@@ -1,4 +1,4 @@
-package com.neo.sk.nyx
+package wifiIntensity
 
 /**
   * User: Taoz

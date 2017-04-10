@@ -33,7 +33,7 @@ trait BaseService extends JsonProtocol with SessionBase with CirceSupport{
 
   val boxManager: ActorRef
   
-  private val log = LoggerFactory.getLogger("com.neo.sk.nyx.http.BaseService")
+  private val log = LoggerFactory.getLogger("wifiIntensity.http.BaseService")
 
   lazy val regex = "(10.*|localhost|192.*|127.*)".r
 
@@ -143,7 +143,7 @@ trait BaseService extends JsonProtocol with SessionBase with CirceSupport{
             case t: Json =>
               userAuth {
                 case Some(_) => f(t)
-                case None => redirect("/nyx2/admin/login", StatusCodes.SeeOther)
+                case None => redirect("/wifiIntensity/admin/login", StatusCodes.SeeOther)
               }
           }
         case Left(e) =>

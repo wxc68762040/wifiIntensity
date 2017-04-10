@@ -89,7 +89,7 @@ trait WsClient extends Actor {
 
   override def receive: Receive = {
     case Connect2Akso =>
-
+      log.info("now connect to akso")
       val ((timestamp, nonce, sign)) = SecureUtil.generateSignatureParameters(List(aksoAppId), aksoSecureKey)
       val url = s"ws://$aksoHost:$aksoPort/akso/subscribe/data?nonce=$nonce&timestamp=$timestamp&appId=$aksoAppId&signature=$sign"
 
