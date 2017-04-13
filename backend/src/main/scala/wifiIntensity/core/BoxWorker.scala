@@ -11,18 +11,25 @@ import wifiIntensity.protocol.PutShoots
 	*/
 
 object BoxWorker {
+	val verticalHeight = 1.45
+	val referenceRSSI = -50
+	val scaling = 1920.0 / 3209.0
 	def props(boxMac: String, rssiSet: Int, distanceLoss: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss))
 }
 
 class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Actor {
 	
+	import BoxWorker._
 	private[this] val log = LoggerFactory.getLogger(this.getClass)
 	private[this] val logPrefix = context.self.path
 	private[this] val selfRef = context.self
 	private[this] val shootBuffer = scala.collection.mutable.ListBuffer[rBasicShoot]()
 	
-	private[this] def getDistanceRatio(rssi1: Int, rssi2: Int, distanceLoss: Double) = {
-		Math.pow(10, (rssi2 - rssi1).toDouble / (10 * distanceLoss))
+	private[this] def getDistance(rssi1: Double, rssi2: Double, distanceLoss: Double) = {
+		val rssi = (rssi1 + rssi2).toDouble / 2
+		val realDistance = Math.pow(10, (referenceRSSI - rssi) / (10 * distanceLoss))
+//		val horizontalDistance = Math.sqrt(realDistance * realDistance - verticalHeight * verticalHeight)
+		realDistance * scaling
 	}
 	
 	override def preStart = {
@@ -39,9 +46,14 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Acto
 	
 	def working: Receive = {
 		case PutShoots(_, shoots) =>
-			val validShoots = shoots.filter(e => Math.abs(e.rssi(0)) < rssiSet && Math.abs(e.rssi(1)) < rssiSet).map {e =>
-				rBasicShoot(-1L, boxMac, e.clientMac, e.t, Math.abs(e.rssi(0)), Math.abs(e.rssi(1)), getDistanceRatio(e.rssi(0), e.rssi(1), distanceLoss))
-			}
+			val validShoots = shoots.filter(e => e.rssi(0) > rssiSet && e.rssi(1) > rssiSet)
+				.groupBy(e => (e.clientMac, e.t))
+				.map {e =>
+					val size = e._2.size
+					val rssi1 = e._2.map(e => e.rssi(0)).sum.toDouble / size
+					val rssi2 = e._2.map(e => e.rssi(1)).sum.toDouble / size
+					rBasicShoot(-1L, boxMac, e._1._1, e._1._2, rssi1, rssi2, getDistance(rssi1, rssi2, distanceLoss))
+				}
 			log.info(s"$boxMac get shoots, after filter, size: ${validShoots.size}")
 			shootBuffer ++= validShoots
 			if(shootBuffer.size >= 100) {

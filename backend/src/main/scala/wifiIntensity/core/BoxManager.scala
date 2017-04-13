@@ -6,6 +6,8 @@ import wifiIntensity.core.BoxManager._
 import wifiIntensity.models.dao.{BasicShootDAO, BoxDAO}
 import wifiIntensity.models.tables.rBasicShoot
 import wifiIntensity.protocol.SubscribeData
+import com.github.nscala_time.time.Imports.DateTime
+import org.apache.commons.math3.stat.regression.SimpleRegression
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,8 +21,9 @@ object BoxManager {
 	
 	def props(wsClient: ActorRef) = Props(new BoxManager(wsClient))
 	
-	case class InitDone(boxList: List[(String, Int, Double)])
+	case class InitDone(boxList: List[(String, Int, Double, Double, Double)])
 	case class SaveRequest(shoots: List[rBasicShoot])
+	case class RegularlyCounting(start:Long, end: Long)
 	case object WorkDone
 }
 
@@ -29,6 +32,13 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 	private[this] val log = LoggerFactory.getLogger(this.getClass)
 	private[this] val logPrefix = context.self.path
 	private[this] val selfRef = context.self
+	private[this] val boxInfo = scala.collection.mutable.HashMap[String, (Double, Double)]()
+	
+	context.system.scheduler.schedule(
+		2 minutes,
+		1 minute,
+		self,
+		RegularlyCounting(DateTime.now.minusMinutes(2).getMillis, DateTime.now.minusMinutes(1).getMillis))
 	
 	def getBoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double): ActorRef = {
 		context.child(boxMac).getOrElse {
@@ -43,7 +53,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 		log.info(s"$logPrefix is now starting.")
 		context.setReceiveTimeout(2 minutes)
 		BoxDAO.getAllBoxs.map { res =>
-			selfRef ! InitDone(res.map(e => (e.boxMac, e.rssiSet, e.distanceLoss)).toList)
+			selfRef ! InitDone(res.map(e => (e.boxMac, e.rssiSet, e.distanceLoss, e.x, e.y)).toList)
 		}
 	}
 	
@@ -58,6 +68,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 			context.setReceiveTimeout(Duration.Undefined)
 			log.info(s"get init done signal, boxList size: ${boxList.size}")
 			boxList.foreach { e =>
+				boxInfo.put(e._1, (e._4, e._5))
 				val actor = getBoxWorker(e._1, e._2, e._3)
 				wsClient ! SubscribeData(actor, e._1)
 			}
@@ -80,6 +91,30 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 					log.error(s"Insert shoots FAILED: ${e.getMessage}")
 					selfRef ! WorkDone
 			}
+			
+		case RegularlyCounting(start: Long, end: Long) =>
+			BasicShootDAO.getShootsByTime(start, end).map{ list =>
+				val distanceInfo = list.groupBy(_.clientMac).map{ userRecords =>
+					val records = userRecords._2.groupBy(_.boxMac).map{ e =>
+						val recordSize = e._2.size
+						(e._1, e._2.map(_.distance).sum / recordSize)
+					}
+					val reg = new SimpleRegression(true)
+					val x1 = boxInfo.getOrElse(records.head._1, (0, 0))._1
+					val y1 = boxInfo.getOrElse(records.head._1, (0, 0))._2
+					val d1 = records.head._2
+					records.drop(1).foreach{ e =>
+						val x = boxInfo.getOrElse(e._1, (0, 0))._1
+						val y = boxInfo.getOrElse(e._1, (0, 0))._2
+						val d = e._2
+						val u = (y1 - y) / (x1 - x)
+						val v = (d * d - d1 * d1 + x1 * x1 + y1 * y1 - x * x - y * y) / (2 * (x1 - x))
+						reg.addData(u, v)
+					}
+					(userRecords._1, (reg.getIntercept, reg.getSlope))
+				}
+			}
+			
 			
 		case Terminated(child) =>
 			log.error(s"$logPrefix child terminated: ${child.path.name} is dead.")

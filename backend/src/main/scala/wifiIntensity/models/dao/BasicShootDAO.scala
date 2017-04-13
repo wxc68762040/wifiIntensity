@@ -14,4 +14,8 @@ object BasicShootDAO {
 		(BasicShoot ++= shoots).asTry
 	)
 	
+	def getShootsByTime(startTime: Long, endTime: Long) = db.run(
+		BasicShoot.filter(e => e.timestamp < endTime && e.timestamp > startTime).result
+	)
+	
 }

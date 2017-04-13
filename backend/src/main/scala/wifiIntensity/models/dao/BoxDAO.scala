@@ -7,7 +7,7 @@ import slick.driver.PostgresDriver.api._
 /**
 	* Created by 流風幻葬 on 2017/3/31.
 	*/
-object BoxDAO {
+object  BoxDAO {
 	private[this] val Box = SlickTables.tBoxs
 	
 	def getAllBoxs = db.run(

@@ -28,6 +28,7 @@ val playComponentV = "2.5.4"
 val playJsonForAkkaHttp = "1.7.0"
 
 val diodeV = "1.1.0"
+val apacheCommonsMath3V = "3.0"
 
 val projectMainClass = "wifiIntensity.Boot"
 
@@ -125,7 +126,8 @@ lazy val backend = (project in file("backend"))
       //      "com.typesafe.play" %% "play-json" % playComponentV,
       //      "de.heikoseeberger" %% "akka-http-play-json" % playJsonForAkkaHttp,
       //      "io.spray" % "spray-caching_2.11" % "1.3.4",
-      "com.typesafe.play" %% "play-cache" % playComponentV
+      "com.typesafe.play" %% "play-cache" % playComponentV,
+      "org.apache.commons" % "commons-math3" % apacheCommonsMath3V
     )
   )
   .settings(
