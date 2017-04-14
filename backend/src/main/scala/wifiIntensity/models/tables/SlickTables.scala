@@ -15,7 +15,7 @@ trait SlickTables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = tBasicShoot.schema ++ tBoxs.schema
+  lazy val schema: profile.SchemaDescription = tBasicShoot.schema ++ tBoxs.schema ++ tClientLocation.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -76,6 +76,32 @@ trait SlickTables {
   }
   /** Collection-like TableQuery object for table tBoxs */
   lazy val tBoxs = new TableQuery(tag => new tBoxs(tag))
+
+
+  /** GetResult implicit for fetching rClientLocation objects using plain SQL queries */
+  implicit def GetResultrClientLocation(implicit e0: GR[Int], e1: GR[String], e2: GR[Long], e3: GR[Double]): GR[rClientLocation] = GR{
+    prs => import prs._
+    rClientLocation.tupled((<<[Int], <<[String], <<[Long], <<[Double], <<[Double]))
+  }
+  /** Table description of table client_location. Objects of this class serve as prototypes for rows in queries. */
+  class tClientLocation(_tableTag: Tag) extends Table[rClientLocation](_tableTag, "client_location") {
+    def * = (id, clientMac, timestamp, x, y) <> (rClientLocation.tupled, rClientLocation.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(id), Rep.Some(clientMac), Rep.Some(timestamp), Rep.Some(x), Rep.Some(y)).shaped.<>({r=>import r._; _1.map(_=> rClientLocation.tupled((_1.get, _2.get, _3.get, _4.get, _5.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column id SqlType(serial), AutoInc, PrimaryKey */
+    val id: Rep[Int] = column[Int]("id", O.AutoInc, O.PrimaryKey)
+    /** Database column client_mac SqlType(varchar), Length(63,true) */
+    val clientMac: Rep[String] = column[String]("client_mac", O.Length(63,varying=true))
+    /** Database column timestamp SqlType(int8) */
+    val timestamp: Rep[Long] = column[Long]("timestamp")
+    /** Database column x SqlType(float8), Default(0.0) */
+    val x: Rep[Double] = column[Double]("x", O.Default(0.0))
+    /** Database column y SqlType(float8), Default(0.0) */
+    val y: Rep[Double] = column[Double]("y", O.Default(0.0))
+  }
+  /** Collection-like TableQuery object for table tClientLocation */
+  lazy val tClientLocation = new TableQuery(tag => new tClientLocation(tag))
 }
 /** Entity class storing rows of table tBasicShoot
    *  @param id Database column id SqlType(bigserial), AutoInc, PrimaryKey
@@ -95,3 +121,11 @@ trait SlickTables {
    *  @param x Database column x SqlType(float8), Default(0.0)
    *  @param y Database column y SqlType(float8), Default(0.0) */
   case class rBoxs(boxMac: String, boxName: String, rssiSet: Int, distanceLoss: Double = 2.1, x: Double = 0.0, y: Double = 0.0)
+
+  /** Entity class storing rows of table tClientLocation
+   *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
+   *  @param clientMac Database column client_mac SqlType(varchar), Length(63,true)
+   *  @param timestamp Database column timestamp SqlType(int8)
+   *  @param x Database column x SqlType(float8), Default(0.0)
+   *  @param y Database column y SqlType(float8), Default(0.0) */
+  case class rClientLocation(id: Int, clientMac: String, timestamp: Long, x: Double = 0.0, y: Double = 0.0)

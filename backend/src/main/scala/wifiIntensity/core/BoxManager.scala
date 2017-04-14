@@ -3,8 +3,8 @@ package wifiIntensity.core
 import akka.actor.{Actor, ActorRef, Props, Stash, Terminated}
 import org.slf4j.LoggerFactory
 import wifiIntensity.core.BoxManager._
-import wifiIntensity.models.dao.{BasicShootDAO, BoxDAO}
-import wifiIntensity.models.tables.rBasicShoot
+import wifiIntensity.models.dao.{BasicShootDAO, BoxDAO, ClientLocationDAO}
+import wifiIntensity.models.tables.{rBasicShoot, rClientLocation}
 import wifiIntensity.protocol.SubscribeData
 import com.github.nscala_time.time.Imports.DateTime
 import org.apache.commons.math3.stat.regression.SimpleRegression
@@ -34,11 +34,10 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 	private[this] val selfRef = context.self
 	private[this] val boxInfo = scala.collection.mutable.HashMap[String, (Double, Double)]()
 	
-	context.system.scheduler.schedule(
-		2 minutes,
-		1 minute,
-		self,
-		RegularlyCounting(DateTime.now.minusMinutes(2).getMillis, DateTime.now.minusMinutes(1).getMillis))
+	def getInitMillis = {
+		val delayTargetMinute = 2
+		DateTime.now.plusMinutes(delayTargetMinute).withSecondOfMinute(0).getMillis - DateTime.now.getMillis
+	}
 	
 	def getBoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double): ActorRef = {
 		context.child(boxMac).getOrElse {
@@ -48,6 +47,15 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 			child
 		}
 	}
+	
+	context.system.scheduler.schedule(
+		getInitMillis millis,
+		1 minute,
+		self,
+		RegularlyCounting(
+			DateTime.now.minusMinutes(2).withSecondOfMinute(0).withMillisOfSecond(0).getMillis,
+			DateTime.now.minusMinutes(1).withSecondOfMinute(0).withMillisOfSecond(0).getMillis)
+	)
 	
 	override def preStart = {
 		log.info(s"$logPrefix is now starting.")
@@ -94,24 +102,35 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 			
 		case RegularlyCounting(start: Long, end: Long) =>
 			BasicShootDAO.getShootsByTime(start, end).map{ list =>
-				val distanceInfo = list.groupBy(_.clientMac).map{ userRecords =>
-					val records = userRecords._2.groupBy(_.boxMac).map{ e =>
+				val distanceInfo = list.groupBy(_.clientMac).map{ userRecords => //clientMac -> records
+					val records = userRecords._2.groupBy(_.boxMac).map{ e => // clientMac -> boxMac -> records
 						val recordSize = e._2.size
 						(e._1, e._2.map(_.distance).sum / recordSize)
 					}
-					val reg = new SimpleRegression(true)
-					val x1 = boxInfo.getOrElse(records.head._1, (0, 0))._1
-					val y1 = boxInfo.getOrElse(records.head._1, (0, 0))._2
-					val d1 = records.head._2
-					records.drop(1).foreach{ e =>
-						val x = boxInfo.getOrElse(e._1, (0, 0))._1
-						val y = boxInfo.getOrElse(e._1, (0, 0))._2
-						val d = e._2
-						val u = (y1 - y) / (x1 - x)
-						val v = (d * d - d1 * d1 + x1 * x1 + y1 * y1 - x * x - y * y) / (2 * (x1 - x))
-						reg.addData(u, v)
+					if(records.size >= 3) {
+						val reg = new SimpleRegression(true)
+						val x1 = boxInfo.getOrElse(records.head._1, (0.0, 0.0))._1
+						val y1 = boxInfo.getOrElse(records.head._1, (0.0, 0.0))._2
+						val d1 = records.head._2
+						records.drop(1).foreach { e =>
+							val x = boxInfo.getOrElse(e._1, (0.0, 0.0))._1
+							val y = boxInfo.getOrElse(e._1, (0.0, 0.0))._2
+							val d = e._2
+							val u = (y1 - y) / (x1 - x)
+							val v = (d * d - d1 * d1 + x1 * x1 + y1 * y1 - x * x - y * y) / (2 * (x1 - x))
+							reg.addData(u, v)
+						}
+						(userRecords._1, (reg.getIntercept, reg.getSlope))
 					}
-					(userRecords._1, (reg.getIntercept, reg.getSlope))
+					else {
+						("dummy", (0.0, 0.0))
+					}
+				}.filter(_._1 != "dummy").map(e => rClientLocation(-1, e._1, start, e._2._1, e._2._2)).toList
+				ClientLocationDAO.addRecords(distanceInfo).map {
+					case Success(num) =>
+						log.info(s"insert client location success, size: $num")
+					case Failure(e) =>
+						log.error(s"insert client location FAILED: $e")
 				}
 			}
 			

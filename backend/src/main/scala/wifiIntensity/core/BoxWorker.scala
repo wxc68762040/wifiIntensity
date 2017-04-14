@@ -12,7 +12,7 @@ import wifiIntensity.protocol.PutShoots
 
 object BoxWorker {
 	val verticalHeight = 1.45
-	val referenceRSSI = -50
+	val referenceRSSI = -30
 	val scaling = 1920.0 / 3209.0
 	def props(boxMac: String, rssiSet: Int, distanceLoss: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss))
 }
@@ -26,10 +26,10 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Acto
 	private[this] val shootBuffer = scala.collection.mutable.ListBuffer[rBasicShoot]()
 	
 	private[this] def getDistance(rssi1: Double, rssi2: Double, distanceLoss: Double) = {
-		val rssi = (rssi1 + rssi2).toDouble / 2
+		val rssi = (rssi1 + rssi2) / 2
 		val realDistance = Math.pow(10, (referenceRSSI - rssi) / (10 * distanceLoss))
-//		val horizontalDistance = Math.sqrt(realDistance * realDistance - verticalHeight * verticalHeight)
-		realDistance * scaling
+		val horizontalDistance = Math.sqrt(realDistance * realDistance - verticalHeight * verticalHeight)
+		horizontalDistance * scaling
 	}
 	
 	override def preStart = {
