@@ -14,6 +14,7 @@ object BoxWorker {
 	val verticalHeight = 1.45
 	val referenceRSSI = -30
 	val scaling = 1920.0 / 3209.0
+	val bufferLimit = 30
 	def props(boxMac: String, rssiSet: Int, distanceLoss: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss))
 }
 
@@ -56,7 +57,7 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Acto
 				}
 			log.info(s"$boxMac get shoots, after filter, size: ${validShoots.size}")
 			shootBuffer ++= validShoots
-			if(shootBuffer.size >= 100) {
+			if(shootBuffer.size >= bufferLimit) {
 				context.parent ! SaveRequest(shootBuffer.toList)
 				shootBuffer.clear()
 			}
