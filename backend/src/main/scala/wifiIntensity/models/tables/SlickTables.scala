@@ -15,7 +15,7 @@ trait SlickTables {
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
-  lazy val schema: profile.SchemaDescription = tBasicShoot.schema ++ tBoxs.schema ++ tClientLocation.schema
+  lazy val schema: profile.SchemaDescription = tBasicShoot.schema ++ tBoxs.schema ++ tClientLocation.schema ++ tUsers.schema
   @deprecated("Use .schema instead of .ddl", "3.0")
   def ddl = schema
 
@@ -102,6 +102,30 @@ trait SlickTables {
   }
   /** Collection-like TableQuery object for table tClientLocation */
   lazy val tClientLocation = new TableQuery(tag => new tClientLocation(tag))
+
+
+  /** GetResult implicit for fetching rUsers objects using plain SQL queries */
+  implicit def GetResultrUsers(implicit e0: GR[Long], e1: GR[String]): GR[rUsers] = GR{
+    prs => import prs._
+    rUsers.tupled((<<[Long], <<[String], <<[String], <<[Long]))
+  }
+  /** Table description of table users. Objects of this class serve as prototypes for rows in queries. */
+  class tUsers(_tableTag: Tag) extends Table[rUsers](_tableTag, "users") {
+    def * = (uid, userName, password, createTime) <> (rUsers.tupled, rUsers.unapply)
+    /** Maps whole row to an option. Useful for outer joins. */
+    def ? = (Rep.Some(uid), Rep.Some(userName), Rep.Some(password), Rep.Some(createTime)).shaped.<>({r=>import r._; _1.map(_=> rUsers.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+
+    /** Database column uid SqlType(bigserial), AutoInc, PrimaryKey */
+    val uid: Rep[Long] = column[Long]("uid", O.AutoInc, O.PrimaryKey)
+    /** Database column user_name SqlType(varchar), Length(255,true) */
+    val userName: Rep[String] = column[String]("user_name", O.Length(255,varying=true))
+    /** Database column password SqlType(varchar), Length(255,true) */
+    val password: Rep[String] = column[String]("password", O.Length(255,varying=true))
+    /** Database column create_time SqlType(int8), Default(0) */
+    val createTime: Rep[Long] = column[Long]("create_time", O.Default(0L))
+  }
+  /** Collection-like TableQuery object for table tUsers */
+  lazy val tUsers = new TableQuery(tag => new tUsers(tag))
 }
 /** Entity class storing rows of table tBasicShoot
    *  @param id Database column id SqlType(bigserial), AutoInc, PrimaryKey
@@ -129,3 +153,10 @@ trait SlickTables {
    *  @param x Database column x SqlType(float8), Default(0.0)
    *  @param y Database column y SqlType(float8), Default(0.0) */
   case class rClientLocation(id: Int, clientMac: String, timestamp: Long, x: Double = 0.0, y: Double = 0.0)
+
+  /** Entity class storing rows of table tUsers
+   *  @param uid Database column uid SqlType(bigserial), AutoInc, PrimaryKey
+   *  @param userName Database column user_name SqlType(varchar), Length(255,true)
+   *  @param password Database column password SqlType(varchar), Length(255,true)
+   *  @param createTime Database column create_time SqlType(int8), Default(0) */
+  case class rUsers(uid: Long, userName: String, password: String, createTime: Long = 0L)

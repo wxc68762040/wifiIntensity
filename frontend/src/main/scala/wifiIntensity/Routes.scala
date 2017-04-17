@@ -7,5 +7,15 @@ package wifiIntensity
   */
 object Routes {
   
-  val base = "/wifiIntensity"
+  val baseUrl = "/wifiIntensity"
+  
+  object LoginRoute{
+    val loginUrl = baseUrl + "/login"
+    val loginSubmit = baseUrl + "/loginSubmit"
+    val logoutUrl = baseUrl + "/logout"
+  }
+  
+  object UserRoute{
+    val homeUrl = baseUrl + "/home"
+  }
 }

@@ -48,13 +48,24 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 		}
 	}
 	
+	private[this] def doublePoint(basePoint1: (Double, Double), basePoint2: (Double, Double), d1: Double, d2: Double) = {
+		val (x1, y1) = basePoint1
+		val (x2, y2) = basePoint2
+		val totalLength = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+		val target1 = ((d1 / totalLength) * (x2 - x1) + x1 , (d1 / totalLength) * (y2 - y1) + y1)
+		val target2 = ((d2 / totalLength) * (x1 - x2) + x2 , (d2 / totalLength) * (y1 - y2) + y2)
+		((target1._1 + target2._1) / 2, (target1._2 + target2._2) / 2)
+	}
+	
 	context.system.scheduler.schedule(
 		getInitMillis millis,
 		1 minute,
 		self,
+//		RegularlyCounting(DateTime.now.withTime(16,53,0,0).getMillis, DateTime.now.withTime(16,54,0,0).getMillis)
 		RegularlyCounting(
-			DateTime.now.minusMinutes(2).withSecondOfMinute(0).withMillisOfSecond(0).getMillis,
-			DateTime.now.minusMinutes(1).withSecondOfMinute(0).withMillisOfSecond(0).getMillis)
+			DateTime.now.minusMinutes(10).withSecondOfMinute(0).withMillisOfSecond(0).getMillis,
+			DateTime.now.minusMinutes(9).withSecondOfMinute(0).withMillisOfSecond(0).getMillis
+		)
 	)
 	
 	override def preStart = {
@@ -107,7 +118,12 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 						val recordSize = e._2.size
 						(e._1, e._2.map(_.distance).sum / recordSize)
 					}
-					if(records.size >= 3) {
+					if(records.size == 2) {
+						val info1 = (boxInfo.getOrElse(records.head._1, (0.0, 0.0)), records.head._2)
+						val info2 = (boxInfo.getOrElse(records.last._1, (0.0, 0.0)), records.last._2)
+						(userRecords._1, doublePoint(info1._1, info2._1, info1._2, info2._2))
+					}
+					else if(records.size >= 3) {
 						val reg = new SimpleRegression(true)
 						val x1 = boxInfo.getOrElse(records.head._1, (0.0, 0.0))._1
 						val y1 = boxInfo.getOrElse(records.head._1, (0.0, 0.0))._2

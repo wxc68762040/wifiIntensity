@@ -1,12 +1,18 @@
 package wifiIntensity
 
 /**
-  * User: Taoz
-  * Date: 11/23/2016
-  * Time: 7:39 PM
+  * Created by 流風幻葬 on 2017/4/17.
   */
 package object ptcl {
 
-  case class CommonRsp(msg: String = "ok", errCode: Int = 0)
+  sealed trait Request
+  sealed trait Response{
+    val msg: String
+    val errCode:Int
+  }
   
+  case class CommonRsp(msg: String = "ok", errCode: Int = 0) extends Response
+  
+  case class RegisterReq(userName: String, password: String) extends Request
+  case class LoginReq(userName: String, password: String) extends Request
 }

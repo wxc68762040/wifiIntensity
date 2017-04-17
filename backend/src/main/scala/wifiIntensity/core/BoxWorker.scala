@@ -27,8 +27,9 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Acto
 	private[this] val shootBuffer = scala.collection.mutable.ListBuffer[rBasicShoot]()
 	
 	private[this] def getDistance(rssi1: Double, rssi2: Double, distanceLoss: Double) = {
-		val rssi = (rssi1 + rssi2) / 2
-		val realDistance = Math.pow(10, (referenceRSSI - rssi) / (10 * distanceLoss))
+		val realDistance1 = Math.pow(10, (referenceRSSI - rssi1) / (10 * distanceLoss))
+		val realDistance2 = Math.pow(10, (referenceRSSI - rssi2) / (10 * distanceLoss))
+		val realDistance = (realDistance1 + realDistance2) / 2
 		val horizontalDistance = Math.sqrt(realDistance * realDistance - verticalHeight * verticalHeight)
 		horizontalDistance * scaling
 	}
