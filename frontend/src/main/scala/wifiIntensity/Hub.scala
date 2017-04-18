@@ -19,7 +19,7 @@ object Hub extends js.JSApp {
 
   val basePath =
     Option(dom.document.getElementById("basePath"))
-      .map(_.innerHTML).getOrElse("/nyx2/")
+      .map(_.innerHTML).getOrElse("/wifiIntensity/")
 
   def elementIdHtml(id: String): Option[String] = Option(dom.document.getElementById(id)).map(_.innerHTML)
 
@@ -60,6 +60,11 @@ object Hub extends js.JSApp {
         case "counter" => paths(1) match {
           case "helloPage" => HelloPage.render()
           case x => todo(s"counter match error: ${paths.mkString("/")}")
+        }
+
+        case "anotherTest" => paths(1) match {
+          case "test" => HeatmapTest.render()
+          case x => todo(s"wifiIntensity match error")
         }
 
         case x => todo(s"match error: ${paths.mkString("/")}")

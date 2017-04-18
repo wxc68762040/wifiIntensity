@@ -8,8 +8,10 @@ import akka.http.scaladsl.server.Route
   **/
 trait HttpService
   extends BaseService
+  with ResourceService
+  with TestService
   with TodoService{
 
-  val routes : Route = pathPrefix("wifiIntensity")(todoRoute)
+  val routes : Route = pathPrefix("wifiIntensity")(resourceRoutes ~ todoRoute ~ testRoutes)
   
 }

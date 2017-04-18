@@ -23,8 +23,7 @@ object HelloPage extends Component[Div]{
     println(s"change count name to ${inputDom.value}")
     counter.changeName(inputDom.value)
   }
-
-
+  
   override def render(): Div = {
     println("render HelloPage")
     div(
