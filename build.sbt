@@ -63,8 +63,9 @@ lazy val frontend = (project in file("frontend"))
   ))
   .settings(skip in packageJSDependencies := false)
   .settings(
-    persistLauncher in Compile := true,
-    persistLauncher in Test := false,
+//    persistLauncher in Compile := true,
+//    persistLauncher in Test := false,
+    scalaJSUseMainModuleInitializer := true,
     testFrameworks += new TestFramework("utest.runner.Framework"),
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % scalaJsDomV withSources(),

@@ -62,6 +62,11 @@ object Hub extends js.JSApp {
           case x => todo(s"counter match error: ${paths.mkString("/")}")
         }
 
+        case "user" => paths(1) match {
+          case "login" => LoginPage.render()
+          case x => todo(s"user match error.")
+        }
+
         case "anotherTest" => paths(1) match {
           case "test" => HeatmapTest.render()
           case x => todo(s"wifiIntensity match error")
