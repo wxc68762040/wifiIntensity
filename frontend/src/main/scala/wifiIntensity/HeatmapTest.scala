@@ -16,10 +16,8 @@ import scala.scalajs.js.JSConverters._
 	*/
 object HeatmapTest extends Component[Div]{
 	
-	val map = div(*.id:= "heatmap", *.style:= "width:600px; height:400px").render
-	
 	def draw: Unit = {
-		val heatmapInstance = h337.create(new Config{override val container:js.UndefOr[Element] = map})
+		val heatmapInstance = h337.create(new Config{override val container:js.UndefOr[Element] = document.querySelector("#heatmap")})
 		val points = scala.collection.mutable.ListBuffer[Point]()
 		var maxNum = 0
 		val width = 840
@@ -49,12 +47,7 @@ object HeatmapTest extends Component[Div]{
 	}
 	
 	override def render(): Div = {
-		println("!!!!!!!!!!!!")
-		val a =div(
-			div(*.height:= 200, *.width:= 600, *.backgroundColor:= "red"),
-			div(*.height:= 400, *.width:= 600)(map)
-		).render
 		draw
-		a
+		div().render
 	}
 }
