@@ -19,7 +19,7 @@ object heatmap {
 	
 	@js.native
 	@JSGlobal("Heatmap")
-	class HeatmapInstance(config: Config) extends js.Object{
+	class HeatmapInstance extends js.Object{
 		def setData(data: Data): Unit = js.native
 	}
 	

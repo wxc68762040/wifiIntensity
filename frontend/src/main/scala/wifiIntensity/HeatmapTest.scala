@@ -16,7 +16,6 @@ import scala.scalajs.js.JSConverters._
 	*/
 object HeatmapTest extends Component[Div]{
 	
-	def draw: Unit = {
 		val heatmapInstance = h337.create(new Config{override val container:js.UndefOr[Element] = document.querySelector("#heatmap")})
 		val points = scala.collection.mutable.ListBuffer[Point]()
 		var maxNum = 0
@@ -40,14 +39,11 @@ object HeatmapTest extends Component[Div]{
 			override val min: js.UndefOr[Int] = 0
 			override val data: js.UndefOr[js.Array[Point]] = points.toJSArray
 		}
-		println("~~~", data.max)
 		// if you have a set of datapoints always use setData instead of addData
 		// for data initialization
 		heatmapInstance.setData(data)
-	}
 	
 	override def render(): Div = {
-		draw
 		div().render
 	}
 }
