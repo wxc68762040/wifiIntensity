@@ -68,7 +68,7 @@ object Hub extends js.JSApp {
         }
 
         case "anotherTest" => paths(1) match {
-          case "test" => HeatmapTest.render()
+          case "test" => HeatmapTestPage.render()
           case x => todo(s"wifiIntensity match error")
         }
 

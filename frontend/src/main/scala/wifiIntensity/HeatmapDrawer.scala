@@ -14,27 +14,37 @@ import scala.scalajs.js.JSConverters._
 /**
 	* Created by 流風幻葬 on 2017/4/18.
 	*/
-object HeatmapTest extends Component[Div]{
+class HeatmapDrawer extends Component[Div]{
 	
-		val heatmapInstance = h337.create(new Config{override val container:js.UndefOr[Element] = document.querySelector("#heatmap")})
+	
+	val drawButton = button(*.onclick:= { e: MouseEvent =>
+		e.preventDefault()
+		drawPic
+	})("绘制热度图")
+	
+	def drawPic: Unit = {
+		val box = document.querySelector("#heatmap")
+		val heatmapInstance = h337.create(new Config {
+			override val container: js.UndefOr[Element] = box
+		})
 		val points = scala.collection.mutable.ListBuffer[Point]()
 		var maxNum = 0
-		val width = 840
-		val height = 400
+		val width = box.clientWidth
+		val height = box.clientHeight
 		val len = 200
 		
-		for(_ <- 1 to len){
-			val randomValue = Math.floor(Math.random()*100).toInt
-			maxNum = if(maxNum < randomValue) randomValue else maxNum
+		for (_ <- 1 to len) {
+			val randomValue = Math.floor(Math.random() * 100).toInt
+			maxNum = if (maxNum < randomValue) randomValue else maxNum
 			val point = new Point {
-				override val x:js.UndefOr[Int] = Math.floor(Math.random() * width).toInt
-				override val y:js.UndefOr[Int] = Math.floor(Math.random() * height).toInt
-				override val value:js.UndefOr[Int] = randomValue
+				override val x: js.UndefOr[Int] = Math.floor(Math.random() * width).toInt
+				override val y: js.UndefOr[Int] = Math.floor(Math.random() * height).toInt
+				override val value: js.UndefOr[Int] = randomValue
 			}
 			points.append(point)
 		}
 		// heatmap data format
-		val data = new Data{
+		val data = new Data {
 			override val max: js.UndefOr[Int] = maxNum
 			override val min: js.UndefOr[Int] = 0
 			override val data: js.UndefOr[js.Array[Point]] = points.toJSArray
@@ -42,8 +52,9 @@ object HeatmapTest extends Component[Div]{
 		// if you have a set of datapoints always use setData instead of addData
 		// for data initialization
 		heatmapInstance.setData(data)
+	}
 	
 	override def render(): Div = {
-		div().render
+		div(drawButton).render
 	}
 }
