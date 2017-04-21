@@ -23,7 +23,7 @@ object BoxManager {
 	
 	case class InitDone(boxList: List[(String, Int, Double, Double, Double)])
 	case class SaveRequest(shoots: List[rBasicShoot])
-	case class RegularlyCounting(start:Long, end: Long)
+	case object RegularlyCounting
 	case object WorkDone
 }
 
@@ -33,6 +33,8 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 	private[this] val logPrefix = context.self.path
 	private[this] val selfRef = context.self
 	private[this] val boxInfo = scala.collection.mutable.HashMap[String, (Double, Double)]()
+	private[this] val maxX = 1920.0
+	private[this] val maxY = 488.0
 	
 	def getInitMillis = {
 		val delayTargetMinute = 2
@@ -46,6 +48,13 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 			context.watch(child)
 			child
 		}
+	}
+	
+	private[this] def isInRegion(point: (String, (Double, Double))): Boolean = {
+		point._2._1 > 0.0 &&
+		point._2._1 < maxX &&
+		point._2._2 > 0.0 &&
+		point._2._2 < maxY
 	}
 	
 	private[this] def doublePoint(basePoint1: (Double, Double), basePoint2: (Double, Double), d1: Double, d2: Double) = {
@@ -62,10 +71,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 		1 minute,
 		self,
 //		RegularlyCounting(DateTime.now.withTime(16,53,0,0).getMillis, DateTime.now.withTime(16,54,0,0).getMillis)
-		RegularlyCounting(
-			DateTime.now.minusMinutes(10).withSecondOfMinute(0).withMillisOfSecond(0).getMillis,
-			DateTime.now.minusMinutes(9).withSecondOfMinute(0).withMillisOfSecond(0).getMillis
-		)
+		RegularlyCounting
 	)
 	
 	override def preStart = {
@@ -111,7 +117,9 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 					selfRef ! WorkDone
 			}
 			
-		case RegularlyCounting(start: Long, end: Long) =>
+		case RegularlyCounting =>
+			val start = DateTime.now.minusMinutes(2).withSecondOfMinute(0).withMillisOfSecond(0).getMillis
+			val end = DateTime.now.minusMinutes(1).withSecondOfMinute(0).withMillisOfSecond(0).getMillis
 			BasicShootDAO.getShootsByTime(start, end).map{ list =>
 				val distanceInfo = list.groupBy(_.clientMac).map{ userRecords => //clientMac -> records
 					val records = userRecords._2.groupBy(_.boxMac).map{ e => // clientMac -> boxMac -> records
@@ -141,7 +149,8 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 					else {
 						("dummy", (0.0, 0.0))
 					}
-				}.filter(_._1 != "dummy").map(e => rClientLocation(-1, e._1, start, e._2._1, e._2._2)).toList
+				}.filter(e => e._1 != "dummy" && isInRegion(e))
+					.map(e => rClientLocation(-1, e._1, start, e._2._1, e._2._2)).toList
 				ClientLocationDAO.addRecords(distanceInfo).map {
 					case Success(num) =>
 						log.info(s"insert client location success, size: $num")
