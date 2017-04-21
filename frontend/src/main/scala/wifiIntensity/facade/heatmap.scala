@@ -40,5 +40,8 @@ object heatmap {
 	@ScalaJSDefined
 	trait Config extends js.Object{
 		val	container: js.UndefOr[Element] = js.undefined
+		val opacity: js.UndefOr[Double] = js.undefined
+		val blur: js.UndefOr[Double] = js.undefined
+		val radius: js.UndefOr[Double] = js.undefined
 	}
 }

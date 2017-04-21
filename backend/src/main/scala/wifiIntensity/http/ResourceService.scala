@@ -50,8 +50,8 @@ trait ResourceService {
         getFromResourceDirectory("sjsout")
       }
     } ~
-    pathPrefix("img") {
-      getFromResourceDirectory("img")
+    pathPrefix("pic") {
+      getFromResourceDirectory("pic")
     }
   }
 

@@ -16,16 +16,22 @@ import scala.scalajs.js.JSConverters._
 	*/
 class HeatmapDrawer extends Component[Div]{
 	
-	
+	var firstChecker = 0
 	val drawButton = button(*.onclick:= { e: MouseEvent =>
 		e.preventDefault()
 		drawPic
+		firstChecker = 1
 	})("绘制热度图")
 	
 	def drawPic: Unit = {
 		val box = document.querySelector("#heatmap")
+		if(firstChecker != 0) {
+			val existedHeatmap = document.querySelector(".heatmap-canvas")
+			box.removeChild(existedHeatmap)
+		}
 		val heatmapInstance = h337.create(new Config {
 			override val container: js.UndefOr[Element] = box
+			override val opacity: js.UndefOr[Double] = 0.3
 		})
 		val points = scala.collection.mutable.ListBuffer[Point]()
 		var maxNum = 0

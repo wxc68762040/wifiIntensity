@@ -8,7 +8,9 @@ import org.scalajs.dom.html.Div
 	*/
 object HeatmapTestPage extends Component[Div]{
 	
-	val picBox = div(*.id:= "heatmap", *.height:= "400px", *.width:= "600px").render
+	val picBox = div(*.id:= "heatmap", *.height:= "400px", *.width:= "600px")(
+		iframe(*.src:= "/wifiIntensity/static/pic/12map.svg", *.height:= "400px", *.width:= "600px").render
+	).render
 	val button = new HeatmapDrawer().render()
 	override def render(): Div = {
 		div(
