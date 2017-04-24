@@ -50,7 +50,7 @@ object Hub extends js.JSApp {
 
     println(s"valid paths: ${paths.mkString("[", ";", "]")}")
 
-    val page = if (paths.length < 2) {
+    val page = if (paths.length < 1) {
       println(s"path error: $path")
       todo(s"path error: $path")
     } else {
@@ -62,10 +62,7 @@ object Hub extends js.JSApp {
           case x => todo(s"counter match error: ${paths.mkString("/")}")
         }
 
-        case "user" => paths(1) match {
-          case "login" => LoginPage.render()
-          case x => todo(s"user match error.")
-        }
+        case "login" => LoginPage.render()
 
         case "anotherTest" => paths(1) match {
           case "test" => HeatmapTestPage.render()

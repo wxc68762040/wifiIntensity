@@ -14,7 +14,7 @@ import scala.concurrent.Future
 /**
 	* Created by 流風幻葬 on 2017/4/17.
 	*/
-trait AdminService extends HttpService{
+trait AdminService extends BaseService{
 	
 	import io.circe.generic.auto._
 	import io.circe._

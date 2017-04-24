@@ -17,14 +17,13 @@ object LoginPage extends Component[Div]{
 	import io.circe.generic.auto._
 	import io.circe.syntax._
 	
-	val nameDom = input(*.`type` := "text", *.placeholder := "用户名", *.id := "name").render
-	val passwordDom = input(*.`type` := "password", *.placeholder := "密码", *.id := "password").render
-	
-	val submitButton = button(*.cls:= "pure-button pure-button-primary")("登录").render
+	val usernameDom = input(*.`type`:= "text", *.cls:= "form-control", *.placeholder:= "用户名", *.id:= "username", *.required:= "", *.autofocus:= "").render
+	val passwordDom = input(*.`type`:= "password", *.cls:= "form-control", *.placeholder:= "密码", *.id:= "password", *.required:= "").render
+	val submitButton = button(*.`type`:= "submit", *.cls:= "btn btn-lg btn-primary btn-block")("登录").render
 	
 	submitButton.onclick = {e:MouseEvent =>
 		e.preventDefault()
-		val name = nameDom.value
+		val name = usernameDom.value
 		val password = passwordDom.value
 		val body = LoginReq(name,password).asJson.noSpaces
 		Http.postJsonAndParse[CommonRsp](Routes.LoginRoute.loginSubmit,body).map{
@@ -47,23 +46,14 @@ object LoginPage extends Component[Div]{
 	}
 	
 	override def render(): Div = {
-		div(*.cls:= "pure-g")(
-			div(*.cls := "pure-u-1")(
-				h1(*.textAlign := "center")("聊天室登录")
-			),
-			div(*.cls := "pure-u-1")(
-				div(*.cls:= "pure-form", *.textAlign := "center")(
-					table(*.style:= "margin:auto")(
-						tr(
-							td(label("用户名")),td(nameDom)
-						),
-						tr(
-							td(label("密码")),td(passwordDom)
-						),
-						tr(
-							td(submitButton)
-						)
-					)
+		div(
+			img(*.src:= "static/pic/bg.jpg", *.width:= "100%", *.height:= "100%", *.position:= "absolute", *.zIndex:= "-1", *.top:= "0px"),
+			div(*.cls:= "wrapper")(
+				form(*.cls:= "form-signin")(
+					h2(*.cls:= "form-signin-heading")("热度分析系统登录"),
+					usernameDom,
+					passwordDom,
+					submitButton
 				)
 			)
 		).render

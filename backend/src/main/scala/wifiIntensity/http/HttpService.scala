@@ -10,8 +10,10 @@ trait HttpService
   extends BaseService
   with ResourceService
   with TestService
-  with TodoService{
+  with TodoService
+  with AdminService
+{
 
-  val routes : Route = pathPrefix("wifiIntensity")(resourceRoutes ~ todoRoute ~ testRoutes)
+  val routes : Route = pathPrefix("wifiIntensity")(resourceRoutes ~ todoRoute ~ testRoutes ~ adminRoutes)
   
 }

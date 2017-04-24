@@ -35,9 +35,9 @@ class HeatmapDrawer extends Component[Div]{
 		})
 		val points = scala.collection.mutable.ListBuffer[Point]()
 		var maxNum = 0
-		val width = box.clientWidth
+		val width = 1000 /*box.clientWidth*/
 		val height = box.clientHeight
-		val len = 200
+		val len = 400
 		
 		for (_ <- 1 to len) {
 			val randomValue = Math.floor(Math.random() * 100).toInt
