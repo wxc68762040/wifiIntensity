@@ -63,6 +63,7 @@ object Hub extends js.JSApp {
         }
 
         case "login" => LoginPage.render()
+				case "register" => RegisterPage.render()
 
         case "anotherTest" => paths(1) match {
           case "test" => HeatmapTestPage.render()

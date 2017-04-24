@@ -15,6 +15,11 @@ object Routes {
     val logoutUrl = baseUrl + "/logout"
   }
   
+  object RegisterRoute{
+    val RegisterUrl = baseUrl + "/register"
+    val RegisterSubmit = baseUrl + "/registerSubmit"
+  }
+  
   object UserRoute{
     val homeUrl = baseUrl + "/home"
   }

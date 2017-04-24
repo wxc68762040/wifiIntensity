@@ -17,9 +17,10 @@ object LoginPage extends Component[Div]{
 	import io.circe.generic.auto._
 	import io.circe.syntax._
 	
-	val usernameDom = input(*.`type`:= "text", *.cls:= "form-control", *.placeholder:= "用户名", *.id:= "username", *.required:= "", *.autofocus:= "").render
-	val passwordDom = input(*.`type`:= "password", *.cls:= "form-control", *.placeholder:= "密码", *.id:= "password", *.required:= "").render
+	val usernameDom = input(*.`type`:= "text", *.cls:= "form-control form-front", *.placeholder:= "用户名", *.id:= "username", *.required:= "", *.autofocus:= "").render
+	val passwordDom = input(*.`type`:= "password", *.cls:= "form-control form-last", *.placeholder:= "密码", *.id:= "password", *.required:= "").render
 	val submitButton = button(*.`type`:= "submit", *.cls:= "btn btn-lg btn-primary btn-block")("登录").render
+	val registerButton = button(*.`type`:= "submit", *.cls:= "btn btn-lg btn-primary btn-block")("注册").render
 	
 	submitButton.onclick = {e:MouseEvent =>
 		e.preventDefault()
@@ -45,15 +46,21 @@ object LoginPage extends Component[Div]{
 		}
 	}
 	
+	registerButton.onclick = {e:MouseEvent =>
+		e.preventDefault()
+		Shortcut.redirect(Routes.RegisterRoute.RegisterUrl)
+	}
+	
 	override def render(): Div = {
 		div(
 			img(*.src:= "static/pic/bg.jpg", *.width:= "100%", *.height:= "100%", *.position:= "absolute", *.zIndex:= "-1", *.top:= "0px"),
 			div(*.cls:= "wrapper")(
 				form(*.cls:= "form-signin")(
-					h2(*.cls:= "form-signin-heading")("热度分析系统登录"),
+					h2(*.cls:= "form-signin-heading", *.textAlign:= "center")("热度分析系统"),
 					usernameDom,
 					passwordDom,
-					submitButton
+					submitButton,
+					registerButton
 				)
 			)
 		).render
