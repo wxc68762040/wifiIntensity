@@ -53,7 +53,7 @@ object UserHomePage extends Component[Div]{
 					span(*.cls:= "navbar-brand")(nameBox, getUserName)
 				),
 				div(
-					ul(*.cls:= "nav navbar-nav")(
+					ul(*.cls:= "nav navbar-nav navbar-left")(
 						menuMap.head match { case (boxName, (displayName, _)) =>
 							val ele = a(*.name:= boxName,*.href:= "")(displayName).render
 							ele.onclick = switchRightBox(ele.getAttribute("name"))
@@ -64,6 +64,9 @@ object UserHomePage extends Component[Div]{
 							ele.onclick = switchRightBox(ele.getAttribute("name"))
 							li(ele).render
 						}
+					),
+					ul(*.cls:= "nav navbar-nav navbar-right")(
+						li(a(*.href:= Routes.LoginRoute.logoutUrl)("注销"))
 					)
 				)
 			)
