@@ -70,7 +70,9 @@ class UserInfoBox extends Component[Div]{
 					val nameDom = div(
 						span(s"用户名： ${rsp.username}")
 					).render
+					val mapPic = img(*.src:= s"/wifiIntensity/static/uploadPic/${rsp.file}").render
 					basicInfoDom.appendChild(nameDom)
+					mapDom.replaceChild(mapPic, mapDom.firstChild)
 				} else {
 					Shortcut.alert(rsp.msg)
 				}
