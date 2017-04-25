@@ -51,15 +51,15 @@ trait SlickTables {
 
 
   /** GetResult implicit for fetching rBoxs objects using plain SQL queries */
-  implicit def GetResultrBoxs(implicit e0: GR[String], e1: GR[Int], e2: GR[Double]): GR[rBoxs] = GR{
+  implicit def GetResultrBoxs(implicit e0: GR[String], e1: GR[Int], e2: GR[Double], e3: GR[Long]): GR[rBoxs] = GR{
     prs => import prs._
-    rBoxs.tupled((<<[String], <<[String], <<[Int], <<[Double], <<[Double], <<[Double]))
+    rBoxs.tupled((<<[String], <<[String], <<[Int], <<[Double], <<[Double], <<[Double], <<[Long]))
   }
   /** Table description of table boxs. Objects of this class serve as prototypes for rows in queries. */
   class tBoxs(_tableTag: Tag) extends Table[rBoxs](_tableTag, "boxs") {
-    def * = (boxMac, boxName, rssiSet, distanceLoss, x, y) <> (rBoxs.tupled, rBoxs.unapply)
+    def * = (boxMac, boxName, rssiSet, distanceLoss, x, y, owner) <> (rBoxs.tupled, rBoxs.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(boxMac), Rep.Some(boxName), Rep.Some(rssiSet), Rep.Some(distanceLoss), Rep.Some(x), Rep.Some(y)).shaped.<>({r=>import r._; _1.map(_=> rBoxs.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(boxMac), Rep.Some(boxName), Rep.Some(rssiSet), Rep.Some(distanceLoss), Rep.Some(x), Rep.Some(y), Rep.Some(owner)).shaped.<>({r=>import r._; _1.map(_=> rBoxs.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column box_mac SqlType(varchar), PrimaryKey, Length(63,true) */
     val boxMac: Rep[String] = column[String]("box_mac", O.PrimaryKey, O.Length(63,varying=true))
@@ -73,6 +73,8 @@ trait SlickTables {
     val x: Rep[Double] = column[Double]("x", O.Default(0.0))
     /** Database column y SqlType(float8), Default(0.0) */
     val y: Rep[Double] = column[Double]("y", O.Default(0.0))
+    /** Database column owner SqlType(int8), Default(0) */
+    val owner: Rep[Long] = column[Long]("owner", O.Default(0L))
   }
   /** Collection-like TableQuery object for table tBoxs */
   lazy val tBoxs = new TableQuery(tag => new tBoxs(tag))
@@ -105,15 +107,15 @@ trait SlickTables {
 
 
   /** GetResult implicit for fetching rUsers objects using plain SQL queries */
-  implicit def GetResultrUsers(implicit e0: GR[Long], e1: GR[String]): GR[rUsers] = GR{
+  implicit def GetResultrUsers(implicit e0: GR[Long], e1: GR[String], e2: GR[Option[String]]): GR[rUsers] = GR{
     prs => import prs._
-    rUsers.tupled((<<[Long], <<[String], <<[String], <<[Long]))
+    rUsers.tupled((<<[Long], <<[String], <<[String], <<[Long], <<?[String]))
   }
   /** Table description of table users. Objects of this class serve as prototypes for rows in queries. */
   class tUsers(_tableTag: Tag) extends Table[rUsers](_tableTag, "users") {
-    def * = (uid, userName, password, createTime) <> (rUsers.tupled, rUsers.unapply)
+    def * = (uid, userName, password, createTime, file) <> (rUsers.tupled, rUsers.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(uid), Rep.Some(userName), Rep.Some(password), Rep.Some(createTime)).shaped.<>({r=>import r._; _1.map(_=> rUsers.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(uid), Rep.Some(userName), Rep.Some(password), Rep.Some(createTime), file).shaped.<>({r=>import r._; _1.map(_=> rUsers.tupled((_1.get, _2.get, _3.get, _4.get, _5)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column uid SqlType(bigserial), AutoInc, PrimaryKey */
     val uid: Rep[Long] = column[Long]("uid", O.AutoInc, O.PrimaryKey)
@@ -123,6 +125,8 @@ trait SlickTables {
     val password: Rep[String] = column[String]("password", O.Length(255,varying=true))
     /** Database column create_time SqlType(int8), Default(0) */
     val createTime: Rep[Long] = column[Long]("create_time", O.Default(0L))
+    /** Database column file SqlType(varchar), Length(255,true), Default(None) */
+    val file: Rep[Option[String]] = column[Option[String]]("file", O.Length(255,varying=true), O.Default(None))
   }
   /** Collection-like TableQuery object for table tUsers */
   lazy val tUsers = new TableQuery(tag => new tUsers(tag))
@@ -143,8 +147,9 @@ trait SlickTables {
    *  @param rssiSet Database column rssi_set SqlType(int4)
    *  @param distanceLoss Database column distance_loss SqlType(float8), Default(2.1)
    *  @param x Database column x SqlType(float8), Default(0.0)
-   *  @param y Database column y SqlType(float8), Default(0.0) */
-  case class rBoxs(boxMac: String, boxName: String, rssiSet: Int, distanceLoss: Double = 2.1, x: Double = 0.0, y: Double = 0.0)
+   *  @param y Database column y SqlType(float8), Default(0.0)
+   *  @param owner Database column owner SqlType(int8), Default(0) */
+  case class rBoxs(boxMac: String, boxName: String, rssiSet: Int, distanceLoss: Double = 2.1, x: Double = 0.0, y: Double = 0.0, owner: Long = 0L)
 
   /** Entity class storing rows of table tClientLocation
    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey
@@ -158,5 +163,6 @@ trait SlickTables {
    *  @param uid Database column uid SqlType(bigserial), AutoInc, PrimaryKey
    *  @param userName Database column user_name SqlType(varchar), Length(255,true)
    *  @param password Database column password SqlType(varchar), Length(255,true)
-   *  @param createTime Database column create_time SqlType(int8), Default(0) */
-  case class rUsers(uid: Long, userName: String, password: String, createTime: Long = 0L)
+   *  @param createTime Database column create_time SqlType(int8), Default(0)
+   *  @param file Database column file SqlType(varchar), Length(255,true), Default(None) */
+  case class rUsers(uid: Long, userName: String, password: String, createTime: Long = 0L, file: Option[String] = None)

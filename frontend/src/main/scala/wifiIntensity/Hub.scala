@@ -65,6 +65,10 @@ object Hub extends js.JSApp {
         case "login" => LoginPage.render()
 				case "register" => RegisterPage.render()
 
+        case "user" => paths(1) match {
+          case "home" => UserHomePage.render()
+          case x => todo(s"user match error: ${paths.mkString("/")}")
+        }
         case "anotherTest" => paths(1) match {
           case "test" => HeatmapTestPage.render()
           case x => todo(s"wifiIntensity match error")

@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import org.slf4j.LoggerFactory
 import wifiIntensity.http.SessionBase.UserSession
 import wifiIntensity.protocol.ErrorCode
-import wifiIntensity.ptcl.{CommonRsp, LoginReq, RegisterReq}
+import wifiIntensity.ptcl.{CommonRsp, LoginReq, RegisterReq, SessionNameRsp}
 import wifiIntensity.models.dao.UserDAO
 import wifiIntensity.utils.SecureUtil
 

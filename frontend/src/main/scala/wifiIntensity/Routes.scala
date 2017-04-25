@@ -21,6 +21,13 @@ object Routes {
   }
   
   object UserRoute{
-    val homeUrl = baseUrl + "/home"
+    val userUrl = baseUrl + "/user"
+    val homeUrl = userUrl + "/home"
+    val getUserInfo = userUrl + "/getUserInfo"
+    val getBox = userUrl + "/getBox"
+    val addBox = userUrl + "/addBox"
+    val getName = userUrl + "/getName"
+    val deleteBox = userUrl + "/deleteBox"
+    val uploadMap = userUrl + "/uploadMap"
   }
 }

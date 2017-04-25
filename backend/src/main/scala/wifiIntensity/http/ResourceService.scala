@@ -52,6 +52,9 @@ trait ResourceService {
     } ~
     pathPrefix("pic") {
       getFromResourceDirectory("pic")
+    } ~
+    pathPrefix("uploadPic") {
+      getFromDirectory("D:/seekloudProject/wifiIntensity/backend/src/main/resources/uploadPic")
     }
   }
 

@@ -38,6 +38,7 @@ object AppSettings {
   val httpPort = config.getInt("app.http.port")
 
   val appConfig = config.getConfig("app")
+  val dataPath = appConfig.getString("dataPath")
 
   val aksoConfig = appConfig.getConfig("akso")
   val aksoAppId = aksoConfig.getString("appId")

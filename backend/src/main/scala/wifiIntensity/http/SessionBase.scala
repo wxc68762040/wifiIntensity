@@ -60,11 +60,11 @@ trait SessionBase extends CirceSupport with SessionSupport {
   protected def setUserSession(userSession: UserSession): Directive0 = setSession(userSession.toSessionMap)
 
   private def parseSession(session: Map[String, String]) = {
-    (session.get(SessionKeys.userName), session.get(SessionKeys.loginTime)) match {
-      case (Some(username), Some(ts)) =>
+    (session.get(SessionKeys.uid), session.get(SessionKeys.userName), session.get(SessionKeys.loginTime)) match {
+      case (Some(uid), Some(username), Some(ts)) =>
         Try {
           if (System.currentTimeMillis() - ts.toLong < timeout) {
-            Some(username)
+            Some(uid, username)
           } else {
             None
           }

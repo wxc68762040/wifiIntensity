@@ -143,7 +143,7 @@ trait BaseService extends JsonProtocol with SessionBase with CirceSupport{
             case t: Json =>
               userAuth {
                 case Some(_) => f(t)
-                case None => redirect("/wifiIntensity/admin/login", StatusCodes.SeeOther)
+                case None => redirect("/wifiIntensity/login", StatusCodes.SeeOther)
               }
           }
         case Left(e) =>

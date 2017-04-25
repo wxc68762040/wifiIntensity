@@ -15,6 +15,10 @@ object UserDAO {
 		tUsers.filter(_.userName === userName).result.headOption
 	}
 	
+	def getUserByUid(uid: Long) = db.run {
+		tUsers.filter(_.uid === uid).result.headOption
+	}
+
 	def createUser(name: String, password: String) = {
 		val createTime = System.currentTimeMillis
 		val encrypted = SecureUtil.getSecurePassword(password, "127.0.0.1", createTime)
@@ -25,6 +29,10 @@ object UserDAO {
 	
 	def deleteUser(uid: Long) = db.run {
 		tUsers.filter(_.uid === uid).delete.asTry
+	}
+
+	def uploadMap(uid: Long, file: String) = db.run {
+		tUsers.filter(_.uid === uid).map(_.file).update(Some(file)).asTry
 	}
 	
 }

@@ -13,7 +13,7 @@ trait TodoService extends BaseService{
 	val log = LoggerFactory.getLogger(this.getClass())
 	val home: Route = (path("home") & get) {
 		userAuth {
-			case Some(username) =>
+			case Some((_, username)) =>
 				log.info(s"[$username to home].")
 				getFromResource("html/index.html")
 			case None =>

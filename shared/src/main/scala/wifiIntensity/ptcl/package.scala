@@ -11,8 +11,15 @@ package object ptcl {
     val errCode:Int
   }
   
-  case class CommonRsp(msg: String = "ok", errCode: Int = 0) extends Response
-  
   case class RegisterReq(userName: String, password: String) extends Request
   case class LoginReq(userName: String, password: String) extends Request
+  case class AddBoxReq(boxMac: String, boxName: String, x: Double, y: Double) extends Request
+  case class DeleteBoxReq(boxMac: String) extends Request
+  
+  case class BoxInfo(boxMac: String, boxName: String, x: Double, y: Double)
+  case class CommonRsp(msg: String = "ok", errCode: Int = 0) extends Response
+  case class SessionNameRsp(username: String, msg: String = "ok", errCode: Int = 0) extends Response
+  case class UserInfoRsp(username: String, file: String, msg: String = "ok", errCode: Int = 0) extends Response
+  case class BoxListRsp(boxList: List[BoxInfo], msg: String = "ok", errCode: Int = 0) extends Response
+  case class UploadMapRsp(mapPath: String, msg: String = "ok", errCode: Int = 0) extends Response
 }

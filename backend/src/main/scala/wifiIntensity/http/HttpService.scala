@@ -12,8 +12,11 @@ trait HttpService
   with TestService
   with TodoService
   with AdminService
+  with UserService
 {
 
-  val routes : Route = pathPrefix("wifiIntensity")(resourceRoutes ~ todoRoute ~ testRoutes ~ adminRoutes)
+  val routes : Route = pathPrefix("wifiIntensity")(
+    resourceRoutes ~ todoRoute ~ testRoutes ~ adminRoutes ~ userRoutes
+  )
   
 }
