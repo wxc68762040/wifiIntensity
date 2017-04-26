@@ -24,7 +24,7 @@ class HeatmapDrawer extends Component[Div]{
 	})("绘制热度图")
 	
 	def drawPic: Unit = {
-		val box = document.querySelector("#heatmap")
+		val box = document.querySelector(".heatmap")
 		if(firstChecker != 0) {
 			val existedHeatmap = document.querySelector(".heatmap-canvas")
 			box.removeChild(existedHeatmap)
@@ -35,7 +35,7 @@ class HeatmapDrawer extends Component[Div]{
 		})
 		val points = scala.collection.mutable.ListBuffer[Point]()
 		var maxNum = 0
-		val width = 1000 /*box.clientWidth*/
+		val width = box.clientWidth
 		val height = box.clientHeight
 		val len = 400
 		

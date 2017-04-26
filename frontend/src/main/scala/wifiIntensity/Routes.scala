@@ -29,5 +29,6 @@ object Routes {
     val getName = userUrl + "/getName"
     val deleteBox = userUrl + "/deleteBox"
     val uploadMap = userUrl + "/uploadMap"
+    val uploadSize = userUrl + "/uploadSize"
   }
 }

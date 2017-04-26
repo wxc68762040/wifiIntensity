@@ -17,19 +17,17 @@ object UserHomePage extends Component[Div]{
 	
 	val menuMap = Map(
 		"basicInfoShow" -> ("用户信息", new UserInfoBox().render()),
-		"test1" -> ("测试1", div().render),
+		"heatmap" -> ("热度分析", new HeatmapBox().render()),
 		"test2" -> ("测试2", div().render),
 		"test3" -> ("测试3", div().render)
 	)
 	
-//	val menuButton = a(*.href:= "#menu", *.id:="menuLink", *.cls:= "menu-link")(span)
 	val nameBox = div(*.cls:= "name-box").render
 	
 	def switchRightBox(boxName: String) = { e: MouseEvent =>
 		e.preventDefault()
 		val box = menuMap.get(boxName).map(_._2).getOrElse(div(h1(s"cannot find box $boxName")).render)
-		mainBox.textContent = ""
-		mainBox.appendChild(box)
+		mainBox.replaceChild(box, mainBox.firstChild)
 	}
 	
 	def getUserName: Unit = {
@@ -43,7 +41,7 @@ object UserHomePage extends Component[Div]{
 		}
 	}
 	
-	val mainBox = new UserInfoBox().render()
+	val mainBox = div(new UserInfoBox().render()).render
 	
 	val topNaviBox =
 		div(*.cls:= "navbar navbar-default", *.role:="navigation")(
@@ -54,12 +52,7 @@ object UserHomePage extends Component[Div]{
 				),
 				div(
 					ul(*.cls:= "nav navbar-nav navbar-left")(
-						menuMap.head match { case (boxName, (displayName, _)) =>
-							val ele = a(*.name:= boxName,*.href:= "")(displayName).render
-							ele.onclick = switchRightBox(ele.getAttribute("name"))
-							li(*.cls:= "active")(ele).render
-						},
-						menuMap.tail.toList.map { case (boxName, (displayName, _)) =>
+						menuMap.toList.map { case (boxName, (displayName, _)) =>
 							val ele = a(*.name:= boxName,*.href:= "")(displayName).render
 							ele.onclick = switchRightBox(ele.getAttribute("name"))
 							li(ele).render

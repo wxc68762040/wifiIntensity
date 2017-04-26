@@ -4,6 +4,7 @@ import io.circe.{Decoder, Error}
 import wifiIntensity.utils.{Http, Shortcut}
 import org.scalajs.dom.{Event, FormData, MouseEvent, XMLHttpRequest}
 import org.scalajs.dom.html.Div
+import org.scalajs.dom.document
 import wifiIntensity.ptcl._
 
 import scalatags.JsDom.short._
@@ -38,7 +39,6 @@ class UserInfoBox extends Component[Div]{
 	file.onchange = {
 		e:Event=>
 			uploadImg()
-			println("开始执行上传图片方法---------------------")
 	}
 	
 	def deleteBox(boxMac: String, index: Int) = {
@@ -126,9 +126,22 @@ class UserInfoBox extends Component[Div]{
 					Parse[UploadMapRsp](message).map {
 						case Right(info) =>
 							if (info.errCode == 0) {
-								println(s"path:::${info.mapPath}")
 								val imgUrl = s"/wifiIntensity/static/uploadPic/${info.mapPath}"
-								mapDom.replaceChild(img(*.src := imgUrl).render, mapDom.firstChild)
+								val image = img(*.src := imgUrl).render
+								mapDom.replaceChild(image, mapDom.firstChild)
+								val imgwidth = image.offsetWidth
+								val imgheight = image.offsetHeight
+								val body = UploadSizeReq(imgwidth.toInt, imgheight.toInt).asJson.noSpaces
+								Http.postJsonAndParse[CommonRsp](Routes.UserRoute.uploadSize, body).map {
+									case Right(rsp) =>
+										if(rsp.errCode == 0){
+											Shortcut.alert(s"上传成功")
+										} else {
+											Shortcut.alert(s"上传失败: upload size error:${rsp.msg}")
+										}
+									case Left(_) =>
+										Shortcut.alert(s"上传失败: upload size parse error")
+								}
 							} else {
 								println(s"error:${info.msg}")
 								Shortcut.alert(s"上传失败！")
@@ -144,15 +157,15 @@ class UserInfoBox extends Component[Div]{
 	}
 	
 	override def render(): Div = {
-		div(*.cls:= "container")(
+		div(*.cls:= "container", *.id:= "theContainer")(
 			div(*.cls:= "row")(
-				div(*.cls:= "col-md-offset-1 col-md-10")(
+				div(
 					basicInfoDom, getUserBasicInfo,
 					tableDom, getBoxList,
 					label("地图上传"),
 					fileUpload
 				),
-				div(*.cls:= "col-md-offset-1 col-md-10", *.overflowX:= "auto", *.marginBottom:= "80px")(
+				div(*.overflowX:= "auto", *.marginBottom:= "80px")(
 					mapDom
 				)
 			)

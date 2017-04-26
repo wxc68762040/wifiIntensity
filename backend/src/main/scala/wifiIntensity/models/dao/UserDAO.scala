@@ -35,4 +35,7 @@ object UserDAO {
 		tUsers.filter(_.uid === uid).map(_.file).update(Some(file)).asTry
 	}
 	
+	def uploadSize(uid: Long, width: Int, height: Int) = db.run {
+		tUsers.filter(_.uid === uid).map(e => (e.width, e.height)).update((Some(width), Some(height))).asTry
+	}
 }

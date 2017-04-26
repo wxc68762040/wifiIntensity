@@ -107,15 +107,15 @@ trait SlickTables {
 
 
   /** GetResult implicit for fetching rUsers objects using plain SQL queries */
-  implicit def GetResultrUsers(implicit e0: GR[Long], e1: GR[String], e2: GR[Option[String]]): GR[rUsers] = GR{
+  implicit def GetResultrUsers(implicit e0: GR[Long], e1: GR[String], e2: GR[Option[String]], e3: GR[Option[Int]]): GR[rUsers] = GR{
     prs => import prs._
-    rUsers.tupled((<<[Long], <<[String], <<[String], <<[Long], <<?[String]))
+    rUsers.tupled((<<[Long], <<[String], <<[String], <<[Long], <<?[String], <<?[Int], <<?[Int]))
   }
   /** Table description of table users. Objects of this class serve as prototypes for rows in queries. */
   class tUsers(_tableTag: Tag) extends Table[rUsers](_tableTag, "users") {
-    def * = (uid, userName, password, createTime, file) <> (rUsers.tupled, rUsers.unapply)
+    def * = (uid, userName, password, createTime, file, width, height) <> (rUsers.tupled, rUsers.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(uid), Rep.Some(userName), Rep.Some(password), Rep.Some(createTime), file).shaped.<>({r=>import r._; _1.map(_=> rUsers.tupled((_1.get, _2.get, _3.get, _4.get, _5)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(uid), Rep.Some(userName), Rep.Some(password), Rep.Some(createTime), file, width, height).shaped.<>({r=>import r._; _1.map(_=> rUsers.tupled((_1.get, _2.get, _3.get, _4.get, _5, _6, _7)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column uid SqlType(bigserial), AutoInc, PrimaryKey */
     val uid: Rep[Long] = column[Long]("uid", O.AutoInc, O.PrimaryKey)
@@ -127,6 +127,10 @@ trait SlickTables {
     val createTime: Rep[Long] = column[Long]("create_time", O.Default(0L))
     /** Database column file SqlType(varchar), Length(255,true), Default(None) */
     val file: Rep[Option[String]] = column[Option[String]]("file", O.Length(255,varying=true), O.Default(None))
+    /** Database column width SqlType(int4), Default(None) */
+    val width: Rep[Option[Int]] = column[Option[Int]]("width", O.Default(None))
+    /** Database column height SqlType(int4), Default(None) */
+    val height: Rep[Option[Int]] = column[Option[Int]]("height", O.Default(None))
   }
   /** Collection-like TableQuery object for table tUsers */
   lazy val tUsers = new TableQuery(tag => new tUsers(tag))
@@ -164,5 +168,7 @@ trait SlickTables {
    *  @param userName Database column user_name SqlType(varchar), Length(255,true)
    *  @param password Database column password SqlType(varchar), Length(255,true)
    *  @param createTime Database column create_time SqlType(int8), Default(0)
-   *  @param file Database column file SqlType(varchar), Length(255,true), Default(None) */
-  case class rUsers(uid: Long, userName: String, password: String, createTime: Long = 0L, file: Option[String] = None)
+   *  @param file Database column file SqlType(varchar), Length(255,true), Default(None)
+   *  @param width Database column width SqlType(int4), Default(None)
+   *  @param height Database column height SqlType(int4), Default(None) */
+  case class rUsers(uid: Long, userName: String, password: String, createTime: Long = 0L, file: Option[String] = None, width: Option[Int] = None, height: Option[Int] = None)

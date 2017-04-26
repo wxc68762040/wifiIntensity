@@ -41,7 +41,8 @@ trait UserService extends BaseService{
 				dealFutureResult {
 					UserDAO.getUserByUid(uid.toLong).map { userInfo =>
 						if (userInfo.nonEmpty) {
-							complete(UserInfoRsp(userInfo.get.userName, userInfo.get.file.get))
+							val info = userInfo.get
+							complete(UserInfoRsp(info.userName, info.file.get, info.width.get, info.height.get))
 						} else {
 							complete(ErrorCode.userNotExist)
 						}
@@ -133,12 +134,34 @@ trait UserService extends BaseService{
 				}
 		}
 	}
+	
+	private val uploadSize = (path("uploadSize") & post) {
+		entity(as[Either[Error, UploadSizeReq]]) {
+			case Right(req) =>
+				userAuth {
+					case Some((uid, _)) =>
+						dealFutureResult {
+							UserDAO.uploadSize(uid.toLong, req.width, req.height).map {
+								case Success(_) =>
+									complete(CommonRsp())
+								case Failure(e) =>
+									log.error(s"uploadFile error: $e")
+									complete(ErrorCode.uploadFileError)
+							}
+						}
+					case None =>
+						complete(ErrorCode.notLogin)
+				}
+			case Left(e) =>
+				complete(ErrorCode.jsonFormatError)
+		}
+	}
 
 
 	
 	
 	val userRoutes = pathPrefix("user"){
-		home ~ getName ~ getUserInfo ~ getUserBox ~ addBox ~ deleteBox ~ uploadMap
+		home ~ getName ~ getUserInfo ~ getUserBox ~ addBox ~ deleteBox ~ uploadMap ~ uploadSize
 	}
 	
 }

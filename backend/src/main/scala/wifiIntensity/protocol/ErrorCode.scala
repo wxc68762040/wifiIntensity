@@ -22,4 +22,5 @@ object ErrorCode {
   val addBoxError = CommonRsp("add box error", 1000205)
   val deleteBoxError = CommonRsp("delete box error", 1000206)
   val uploadFileError = CommonRsp("upload map error", 1000207)
+  val uploadSizeError = CommonRsp("upload map size error", 1000208)
 }
