@@ -13,4 +13,8 @@ object ClientLocationDAO {
 	def addRecords(r: List[rClientLocation]) = db.run(
 		(ClientLocation ++= r).asTry
 	)
+	
+	def getRecordsByTime(start: Long, end: Long) = db.run(
+		ClientLocation.filter(e => e.timestamp >= start && e.timestamp <= end).result
+	)
 }

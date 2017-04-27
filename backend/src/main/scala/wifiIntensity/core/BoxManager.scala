@@ -21,7 +21,7 @@ object BoxManager {
 	
 	def props(wsClient: ActorRef) = Props(new BoxManager(wsClient))
 	
-	case class InitDone(boxList: List[(String, Int, Double, Double, Double)])
+	case class InitDone(boxList: List[(String, Int, Double, Double, Double, Double)])
 	case class SaveRequest(shoots: List[rBasicShoot])
 	case object RegularlyCounting
 	case object WorkDone
@@ -41,9 +41,9 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 		DateTime.now.plusMinutes(delayTargetMinute).withSecondOfMinute(0).getMillis - DateTime.now.getMillis
 	}
 	
-	def getBoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double): ActorRef = {
+	def getBoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeight: Double): ActorRef = {
 		context.child(boxMac).getOrElse {
-			val child = context.actorOf(BoxWorker.props(boxMac, rssiSet, distanceLoss), boxMac)
+			val child = context.actorOf(BoxWorker.props(boxMac, rssiSet, distanceLoss, verticalHeight), boxMac)
 			log.info(s"From BoxManager: $logPrefix $boxMac is starting.")
 			context.watch(child)
 			child
@@ -78,7 +78,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 		log.info(s"$logPrefix is now starting.")
 		context.setReceiveTimeout(2 minutes)
 		BoxDAO.getAllBoxs.map { res =>
-			selfRef ! InitDone(res.map(e => (e.boxMac, e.rssiSet, e.distanceLoss, e.x, e.y)).toList)
+			selfRef ! InitDone(res.map(e => (e.boxMac, e.rssiSet, e.distanceLoss, e.x, e.y, e.verticalHeight)).toList)
 		}
 	}
 	
@@ -94,7 +94,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 			log.info(s"get init done signal, boxList size: ${boxList.size}")
 			boxList.foreach { e =>
 				boxInfo.put(e._1, (e._4, e._5))
-				val actor = getBoxWorker(e._1, e._2, e._3)
+				val actor = getBoxWorker(e._1, e._2, e._3, e._6)
 				wsClient ! SubscribeData(actor, e._1)
 			}
 			unstashAll()

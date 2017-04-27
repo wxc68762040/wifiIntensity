@@ -30,5 +30,6 @@ object Routes {
     val deleteBox = userUrl + "/deleteBox"
     val uploadMap = userUrl + "/uploadMap"
     val uploadSize = userUrl + "/uploadSize"
+    val getHeatData = userUrl + "/heatData"
   }
 }

@@ -6,6 +6,7 @@ import wifiIntensity.ptcl._
 
 import scalatags.JsDom.short._
 import io.circe.generic.auto._
+import org.scalajs.dom.Event
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,11 +14,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 	* Created by 流風幻葬 on 2017/4/26.
 	*/
 class HeatmapBox extends Component[Div]{
-	val button = new HeatmapDrawer().render()
 	val mapBoxWrapper = div(*.cls:= "heatmap-wrapper", *.overflow:= "auto").render
 	val mapBox = div(*.cls:= "heatmap")().render
-	val dateDom = input(*.`type`:= "date").render
+	val dateLabel = label(*.`for`:= "datePicker")("日期：")
+	val datePicker = input(*.cls:= "form-control", *.`type` := "date", *.id:= "datePicker",
+		*.value := "2017-04-27", *.onclick:= s"WdatePicker({readOnly:true})", *.marginRight:= "30px").render
+	val button = new HeatmapDrawer(datePicker).render()
 	
+	datePicker.onchange = { e: Event =>
+		e.preventDefault()
+		if(datePicker.value.isEmpty) {
+			button.setAttribute("disabled", "disabled")
+		} else {
+			button.removeAttribute("disabled")
+		}
+	}
 	def getMap: Unit = {
 		mapBoxWrapper.appendChild(mapBox)
 		Http.getAndParse[UserInfoRsp](Routes.UserRoute.getUserInfo).map {
@@ -36,8 +47,14 @@ class HeatmapBox extends Component[Div]{
 	
 	override def render(): Div = {
 		div(
-			mapBoxWrapper, getMap,
-			button
+			div(*.marginBottom:= "50px", *.cls:= "container")(
+				form(*.cls:= "form-inline")(
+					dateLabel, datePicker, button
+				)
+			),
+			div(
+				mapBoxWrapper, getMap
+			)
 		).render
 	}
 }

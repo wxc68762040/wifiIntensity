@@ -11,14 +11,13 @@ import wifiIntensity.protocol.PutShoots
 	*/
 
 object BoxWorker {
-	val verticalHeight = 1.45
 	val referenceRSSI = -30
 	val scaling = 1920.0 / 32.09
 	val bufferLimit = 30
-	def props(boxMac: String, rssiSet: Int, distanceLoss: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss))
+	def props(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeight: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss, verticalHeight))
 }
 
-class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double) extends Actor {
+class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeight: Double) extends Actor {
 	
 	import BoxWorker._
 	private[this] val log = LoggerFactory.getLogger(this.getClass)

@@ -2,8 +2,8 @@ package wifiIntensity.http
 
 import akka.http.scaladsl.server.Directives._
 import org.slf4j.LoggerFactory
-import wifiIntensity.models.dao.{BoxDAO, UserDAO}
-import wifiIntensity.models.tables.rBoxs
+import wifiIntensity.models.dao.{BoxDAO, ClientLocationDAO, UserDAO}
+import wifiIntensity.models.tables.{rBoxs, rClientLocation}
 import wifiIntensity.protocol.ErrorCode
 import wifiIntensity.ptcl._
 import wifiIntensity.utils.FileUtil._
@@ -73,7 +73,7 @@ trait UserService extends BaseService{
 				userAuth {
 					case Some((uid, _)) =>
 						dealFutureResult {
-							val line = rBoxs(r.boxMac, r.boxName, -65, 2.1, r.x, r.y, uid.toLong)
+							val line = rBoxs(r.boxMac, r.boxName, -65, 2.1, r.x, r.y, uid.toLong, r.verticalHeight)
 							BoxDAO.addBox(line).map {
 								case Success(_) =>
 									complete(CommonRsp())
@@ -157,11 +157,37 @@ trait UserService extends BaseService{
 		}
 	}
 
-
+	private val heatData = (path("heatData") & post) {
+		entity(as[Either[Error, HeatDataReq]]) {
+			case Right(req) =>
+				dealFutureResult {
+					ClientLocationDAO.getRecordsByTime(req.start, req.end).map {rst =>
+						val records = scala.collection.mutable.ListBuffer[rClientLocation]()
+						val mergedData = scala.collection.mutable.ListBuffer[HeatData]()
+						records ++= rst
+						while(records.nonEmpty) {
+							val sample = records.head
+							val xRange = sample.x.toInt / 10 * 10
+							val yRange = sample.y.toInt / 10 * 10
+							val rangedRecords = records
+								.filter(e => e.x >= xRange && e.x < xRange + 10 && e.y >= yRange && e.y < yRange + 10)
+							records --= rangedRecords
+							val total = rangedRecords.size
+							val xCenter = rangedRecords.map(_.x).sum / total
+							val yCenter = rangedRecords.map(_.y).sum / total
+							mergedData += HeatData(xCenter.toInt, yCenter.toInt, total)
+						}
+						complete(HeatDataRsp(mergedData.toList))
+					}
+				}
+			case Left(e) =>
+				complete(ErrorCode.jsonFormatError)
+		}
+	}
 	
 	
 	val userRoutes = pathPrefix("user"){
-		home ~ getName ~ getUserInfo ~ getUserBox ~ addBox ~ deleteBox ~ uploadMap ~ uploadSize
+		home ~ getName ~ getUserInfo ~ getUserBox ~ addBox ~ deleteBox ~ uploadMap ~ uploadSize ~ heatData
 	}
 	
 }
