@@ -37,7 +37,7 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 	private[this] val maxY = 488.0
 	
 	def getInitMillis = {
-		val delayTargetMinute = 2
+		val delayTargetMinute = 1
 		DateTime.now.plusMinutes(delayTargetMinute).withSecondOfMinute(0).getMillis - DateTime.now.getMillis
 	}
 	
@@ -126,12 +126,12 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 						val recordSize = e._2.size
 						(e._1, e._2.map(_.distance).sum / recordSize)
 					}
-					if(records.size == 2) {
+					/*if(records.size == 2) {
 						val info1 = (boxInfo.getOrElse(records.head._1, (0.0, 0.0)), records.head._2)
 						val info2 = (boxInfo.getOrElse(records.last._1, (0.0, 0.0)), records.last._2)
 						(userRecords._1, doublePoint(info1._1, info2._1, info1._2, info2._2))
 					}
-					else if(records.size >= 3) {
+					else*/ if(records.size >= 3) {
 						val reg = new SimpleRegression(true)
 						val x1 = boxInfo.getOrElse(records.head._1, (0.0, 0.0))._1
 						val y1 = boxInfo.getOrElse(records.head._1, (0.0, 0.0))._2

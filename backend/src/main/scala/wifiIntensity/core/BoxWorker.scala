@@ -55,7 +55,7 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeig
 					val rssi2 = e._2.map(e => e.rssi(1)).sum.toDouble / size
 					rBasicShoot(-1L, boxMac, e._1._1, e._1._2, rssi1, rssi2, getDistance(rssi1, rssi2, distanceLoss))
 				}
-			log.info(s"$boxMac get shoots, after filter, size: ${validShoots.size}")
+//			log.info(s"$boxMac get shoots, after filter, size: ${validShoots.size}")
 			shootBuffer ++= validShoots
 			if(shootBuffer.size >= bufferLimit) {
 				context.parent ! SaveRequest(shootBuffer.toList)
