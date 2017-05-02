@@ -149,9 +149,10 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 						val x1 = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
 						val y1 = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
 						val d1 = records.head._2
+						log.info(s"x1 y1:: $x1 $y1")
 						records.drop(1).foreach { e =>
-							val x = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
-							val y = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
+							val x = boxInfo.filter(_.boxMac == e._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
+							val y = boxInfo.filter(_.boxMac == e._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
 							val d = e._2
 							val u = (y1 - y) / (x1 - x)
 							val v = (d * d - d1 * d1 + x1 * x1 + y1 * y1 - x * x - y * y) / (2 * (x1 - x))
@@ -223,8 +224,8 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 						val y1 = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
 						val d1 = records.head._2
 						records.drop(1).foreach { e =>
-							val x = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
-							val y = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
+							val x = boxInfo.filter(_.boxMac == e._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
+							val y = boxInfo.filter(_.boxMac == e._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
 							val d = e._2
 							val u = (y1 - y) / (x1 - x)
 							val v = (d * d - d1 * d1 + x1 * x1 + y1 * y1 - x * x - y * y) / (2 * (x1 - x))

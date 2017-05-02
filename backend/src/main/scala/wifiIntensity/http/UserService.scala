@@ -75,7 +75,7 @@ trait UserService extends BaseService{
 				userAuth {
 					case Some((uid, _)) =>
 						dealFutureResult {
-							val line = rBoxs(r.boxMac, r.boxName, -65, 2.1, r.x, r.y, uid.toLong, r.verticalHeight)
+							val line = rBoxs(r.boxMac, r.boxName, -65, 2.1, r.x, r.y, uid.toLong, r.verticalHeight, -30.0)
 							BoxDAO.addBox(line).map {
 								case Success(_) =>
 									complete(CommonRsp())
