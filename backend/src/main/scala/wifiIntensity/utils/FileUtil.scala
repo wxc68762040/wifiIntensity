@@ -7,6 +7,8 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.slf4j.LoggerFactory
 import wifiIntensity.common.AppSettings
 
+import scala.io.Source
+
 /**
 	* User: zhaorui
 	* Date: 2016/4/23
@@ -111,6 +113,36 @@ object FileUtil {
 		}_h${
 			h
 		}.$f2"
+	}
+	
+	def readAksoData(fileName: String) = {
+		val aksoFile = new File(AppSettings.aksoData + "/" + fileName).getAbsoluteFile
+		log.info(s"loading file: ${aksoFile.getAbsolutePath}")
+		val cache = if(aksoFile.exists()){
+			val source = Source.fromFile(aksoFile, "UTF-8")
+			val cache = source.getLines().map{ line =>
+				try {
+					val infos = line.split("#")
+					val lineId = infos(0).toLong
+					val boxMac = infos(1)
+					val clientMac = infos(2).toUpperCase
+					val rssi = infos(3).split(",").map(_.toInt)
+					val timestamp = infos(4).toLong
+					val dataType = infos(5)
+					Shoot(lineId, boxMac, clientMac, timestamp, rssi, dataType)
+				} catch {
+					case e:Exception =>
+						log.error(s"read duration cache: $fileName error: $e")
+						Shoot(0L, "0", "0", 0, Array(-100, -100, -100), "error")
+				}
+			}.toList
+			source.close()
+			List(cache)
+		} else {
+			List(List[Shoot]())
+		}
+		log.info(s"load complete: ${cache.map(_.size)}")
+		cache
 	}
 	
 }

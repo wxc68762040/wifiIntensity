@@ -3,12 +3,13 @@ package wifiIntensity
 import org.scalajs.dom.raw.Element
 
 import scalatags.JsDom.short._
-import org.scalajs.dom.html.{Button, Input}
+import org.scalajs.dom.html.{Button, Input, Select}
 import org.scalajs.dom._
 import org.scalajs.dom.raw.HTMLElement
 import wifiIntensity.facade.heatmap._
 import wifiIntensity.ptcl.{HeatDataReq, HeatDataRsp}
 import wifiIntensity.utils.{Http, Shortcut}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js
 import scala.scalajs.js.Date
@@ -19,7 +20,7 @@ import io.circe.syntax._
 /**
 	* Created by 流風幻葬 on 2017/4/18.
 	*/
-class HeatmapDrawer(date: Input) extends Component[Button]{
+class HeatmapDrawer(date: Input, fromFile: Select) extends Component[Button]{
 	
 	var firstChecker = 0
 	val drawButton = button(*.cls:= "btn btn-primary",
@@ -56,7 +57,8 @@ class HeatmapDrawer(date: Input) extends Component[Button]{
 //			points.append(point)
 //		}
 		val timestamp = Date.parse(date.value + " 00:00:00").toLong
-		val body = HeatDataReq(timestamp, timestamp + 86400000).asJson.noSpaces
+		val isFromFile = if(fromFile.value == "1") 1 else 0
+		val body = HeatDataReq(timestamp, timestamp + 86400000, isFromFile).asJson.noSpaces
 		Http.postJsonAndParse[HeatDataRsp](Routes.UserRoute.getHeatData, body).map {
 			case Right(rsp) =>
 				rsp.dataList.foreach { info =>

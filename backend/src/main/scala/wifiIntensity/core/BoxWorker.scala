@@ -2,22 +2,21 @@ package wifiIntensity.core
 
 import akka.actor.{Actor, Props}
 import org.slf4j.LoggerFactory
-import wifiIntensity.core.BoxManager.SaveRequest
+import wifiIntensity.core.BoxManager.{DistanceShoots, SaveRequest, ShootWithDistance}
 import wifiIntensity.models.tables.rBasicShoot
-import wifiIntensity.protocol.PutShoots
+import wifiIntensity.protocol.{GetDistance, PutShoots}
 
 /**
 	* Created by 流風幻葬 on 2017/3/31.
 	*/
 
 object BoxWorker {
-	val referenceRSSI = -30
 	val scaling = 1920.0 / 32.09
 	val bufferLimit = 30
-	def props(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeight: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss, verticalHeight))
+	def props(boxMac: String, rssiSet: Int, distanceLoss: Double, referenceRSSI: Double, verticalHeight: Double) = Props(new BoxWorker(boxMac, rssiSet, distanceLoss, referenceRSSI, verticalHeight))
 }
 
-class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeight: Double) extends Actor {
+class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, referenceRSSI: Double,  verticalHeight: Double) extends Actor {
 	
 	import BoxWorker._
 	private[this] val log = LoggerFactory.getLogger(this.getClass)
@@ -40,7 +39,7 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeig
 	
 	override def postStop = {
 		log.info(s"$logPrefix is stopped.")
-		context.parent ! SaveRequest(shootBuffer.toList)
+		context.parent ! SaveRequest(boxMac, shootBuffer.toList)
 	}
 	
 	override def receive = working
@@ -58,9 +57,21 @@ class BoxWorker(boxMac: String, rssiSet: Int, distanceLoss: Double, verticalHeig
 //			log.info(s"$boxMac get shoots, after filter, size: ${validShoots.size}")
 			shootBuffer ++= validShoots
 			if(shootBuffer.size >= bufferLimit) {
-				context.parent ! SaveRequest(shootBuffer.toList)
+				context.parent ! SaveRequest(boxMac, shootBuffer.toList)
 				shootBuffer.clear()
 			}
+			
+		case GetDistance(_, shoots) =>
+			val validShoots = shoots.filter(e => e.rssi(0) > rssiSet && e.rssi(1) > rssiSet)
+				.groupBy(e => (e.clientMac, e.t))
+				.map { e =>
+					val size = e._2.size
+					val rssi1 = e._2.map(e => e.rssi(0)).sum.toDouble / size
+					val rssi2 = e._2.map(e => e.rssi(1)).sum.toDouble / size
+					ShootWithDistance(boxMac, e._1._1, e._1._2, getDistance(rssi1, rssi2, distanceLoss))
+				}.toList
+			log.info(s"$boxMac distance count finish. sending back")
+			context.parent ! DistanceShoots(validShoots)
 		
 		case msg =>
 			log.warn(s"$logPrefix get unknown message: $msg")

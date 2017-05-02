@@ -1,7 +1,9 @@
 package wifiIntensity.http
 
 import akka.http.scaladsl.server.Directives._
+import akka.pattern.ask
 import org.slf4j.LoggerFactory
+import wifiIntensity.core.BoxManager.{FileClientLocation, FileClientLocationList, GetDataFromFile}
 import wifiIntensity.models.dao.{BoxDAO, ClientLocationDAO, UserDAO}
 import wifiIntensity.models.tables.{rBoxs, rClientLocation}
 import wifiIntensity.protocol.ErrorCode
@@ -160,24 +162,48 @@ trait UserService extends BaseService{
 	private val heatData = (path("heatData") & post) {
 		entity(as[Either[Error, HeatDataReq]]) {
 			case Right(req) =>
-				dealFutureResult {
-					ClientLocationDAO.getRecordsByTime(req.start, req.end).map {rst =>
-						val records = scala.collection.mutable.ListBuffer[rClientLocation]()
-						val mergedData = scala.collection.mutable.ListBuffer[HeatData]()
-						records ++= rst
-						while(records.nonEmpty) {
-							val sample = records.head
-							val xRange = sample.x.toInt / 10 * 10
-							val yRange = sample.y.toInt / 10 * 10
-							val rangedRecords = records
-								.filter(e => e.x >= xRange && e.x < xRange + 10 && e.y >= yRange && e.y < yRange + 10)
-							records --= rangedRecords
-							val total = rangedRecords.size
-							val xCenter = rangedRecords.map(_.x).sum / total
-							val yCenter = rangedRecords.map(_.y).sum / total
-							mergedData += HeatData(xCenter.toInt, yCenter.toInt, total)
+				if(req.fromFile == 0) {
+					dealFutureResult {
+						ClientLocationDAO.getRecordsByTime(req.start, req.end).map { rst =>
+							val records = scala.collection.mutable.ListBuffer[rClientLocation]()
+							val mergedData = scala.collection.mutable.ListBuffer[HeatData]()
+							records ++= rst
+							while (records.nonEmpty) {
+								val sample = records.head
+								val xRange = sample.x.toInt / 10 * 10
+								val yRange = sample.y.toInt / 10 * 10
+								val rangedRecords = records
+									.filter(e => e.x >= xRange && e.x < xRange + 10 && e.y >= yRange && e.y < yRange + 10)
+								records --= rangedRecords
+								val total = rangedRecords.size
+								val xCenter = rangedRecords.map(_.x).sum / total
+								val yCenter = rangedRecords.map(_.y).sum / total
+								mergedData += HeatData(xCenter.toInt, yCenter.toInt, total)
+							}
+							complete(HeatDataRsp(mergedData.toList))
 						}
-						complete(HeatDataRsp(mergedData.toList))
+					}
+				} else {
+					dealFutureResult {
+						(boxManager ? GetDataFromFile(req.start)).map {
+							case FileClientLocationList(list) =>
+								val records = scala.collection.mutable.ListBuffer[FileClientLocation]()
+								val mergedData = scala.collection.mutable.ListBuffer[HeatData]()
+								records ++= list
+								while (records.nonEmpty) {
+									val sample = records.head
+									val xRange = sample.x.toInt / 10 * 10
+									val yRange = sample.y.toInt / 10 * 10
+									val rangedRecords = records
+										.filter(e => e.x >= xRange && e.x < xRange + 10 && e.y >= yRange && e.y < yRange + 10)
+									records --= rangedRecords
+									val total = rangedRecords.size
+									val xCenter = rangedRecords.map(_.x).sum / total
+									val yCenter = rangedRecords.map(_.y).sum / total
+									mergedData += HeatData(xCenter.toInt, yCenter.toInt, total)
+								}
+								complete(HeatDataRsp(mergedData.toList))
+						}
 					}
 				}
 			case Left(e) =>

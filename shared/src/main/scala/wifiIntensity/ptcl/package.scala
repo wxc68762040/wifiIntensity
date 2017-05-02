@@ -16,7 +16,7 @@ package object ptcl {
   case class AddBoxReq(boxMac: String, boxName: String, x: Double, y: Double, verticalHeight: Double) extends Request
   case class DeleteBoxReq(boxMac: String) extends Request
   case class UploadSizeReq(width: Int, height: Int) extends Request
-  case class HeatDataReq(start: Long, end: Long) extends Request
+  case class HeatDataReq(start: Long, end: Long, fromFile: Int) extends Request
   
   case class BoxInfo(boxMac: String, boxName: String, x: Double, y: Double)
   case class HeatData(x: Int, y: Int, total: Int)

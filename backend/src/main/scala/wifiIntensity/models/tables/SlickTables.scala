@@ -53,13 +53,13 @@ trait SlickTables {
   /** GetResult implicit for fetching rBoxs objects using plain SQL queries */
   implicit def GetResultrBoxs(implicit e0: GR[String], e1: GR[Int], e2: GR[Double], e3: GR[Long]): GR[rBoxs] = GR{
     prs => import prs._
-    rBoxs.tupled((<<[String], <<[String], <<[Int], <<[Double], <<[Double], <<[Double], <<[Long], <<[Double]))
+    rBoxs.tupled((<<[String], <<[String], <<[Int], <<[Double], <<[Double], <<[Double], <<[Long], <<[Double], <<[Double]))
   }
   /** Table description of table boxs. Objects of this class serve as prototypes for rows in queries. */
   class tBoxs(_tableTag: Tag) extends Table[rBoxs](_tableTag, "boxs") {
-    def * = (boxMac, boxName, rssiSet, distanceLoss, x, y, owner, verticalHeight) <> (rBoxs.tupled, rBoxs.unapply)
+    def * = (boxMac, boxName, rssiSet, distanceLoss, x, y, owner, verticalHeight, rssiRefernce) <> (rBoxs.tupled, rBoxs.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(boxMac), Rep.Some(boxName), Rep.Some(rssiSet), Rep.Some(distanceLoss), Rep.Some(x), Rep.Some(y), Rep.Some(owner), Rep.Some(verticalHeight)).shaped.<>({r=>import r._; _1.map(_=> rBoxs.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7.get, _8.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(boxMac), Rep.Some(boxName), Rep.Some(rssiSet), Rep.Some(distanceLoss), Rep.Some(x), Rep.Some(y), Rep.Some(owner), Rep.Some(verticalHeight), Rep.Some(rssiRefernce)).shaped.<>({r=>import r._; _1.map(_=> rBoxs.tupled((_1.get, _2.get, _3.get, _4.get, _5.get, _6.get, _7.get, _8.get, _9.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column box_mac SqlType(varchar), PrimaryKey, Length(63,true) */
     val boxMac: Rep[String] = column[String]("box_mac", O.PrimaryKey, O.Length(63,varying=true))
@@ -77,6 +77,8 @@ trait SlickTables {
     val owner: Rep[Long] = column[Long]("owner", O.Default(0L))
     /** Database column vertical_height SqlType(float8), Default(0.0) */
     val verticalHeight: Rep[Double] = column[Double]("vertical_height", O.Default(0.0))
+    /** Database column rssi_refernce SqlType(float8) */
+    val rssiRefernce: Rep[Double] = column[Double]("rssi_refernce")
   }
   /** Collection-like TableQuery object for table tBoxs */
   lazy val tBoxs = new TableQuery(tag => new tBoxs(tag))
@@ -155,8 +157,9 @@ trait SlickTables {
    *  @param x Database column x SqlType(float8), Default(0.0)
    *  @param y Database column y SqlType(float8), Default(0.0)
    *  @param owner Database column owner SqlType(int8), Default(0)
-   *  @param verticalHeight Database column vertical_height SqlType(float8), Default(0.0) */
-  case class rBoxs(boxMac: String, boxName: String, rssiSet: Int, distanceLoss: Double = 2.1, x: Double = 0.0, y: Double = 0.0, owner: Long = 0L, verticalHeight: Double = 0.0)
+   *  @param verticalHeight Database column vertical_height SqlType(float8), Default(0.0)
+   *  @param rssiRefernce Database column rssi_refernce SqlType(float8) */
+  case class rBoxs(boxMac: String, boxName: String, rssiSet: Int, distanceLoss: Double = 2.1, x: Double = 0.0, y: Double = 0.0, owner: Long = 0L, verticalHeight: Double = 0.0, rssiRefernce: Double)
 
   /** Entity class storing rows of table tClientLocation
    *  @param id Database column id SqlType(serial), AutoInc, PrimaryKey

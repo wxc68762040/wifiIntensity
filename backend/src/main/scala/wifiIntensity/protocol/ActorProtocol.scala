@@ -9,4 +9,5 @@ import wifiIntensity.utils.Shoot
 sealed trait ActorProtocol
 
 case class PutShoots(boxMac: String, shoots: List[Shoot]) extends ActorProtocol
+case class GetDistance(boxMac: String, shoots: List[Shoot]) extends ActorProtocol
 case class SubscribeData(peer: ActorRef, boxMac: String) extends ActorProtocol
