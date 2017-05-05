@@ -21,7 +21,6 @@ trait UserService extends BaseService{
 	import io.circe.generic.auto._
 	
 	private val log = LoggerFactory.getLogger(this.getClass)
-	
 	private val home = (path("home") & get){
 		userAuth { session =>
 			getFromResource("html/index.html")
@@ -165,9 +164,10 @@ trait UserService extends BaseService{
 				if(req.fromFile == 0) {
 					dealFutureResult {
 						ClientLocationDAO.getRecordsByTime(req.start, req.end).map { rst =>
+							log.info(s"get data success: ${rst.size}")
 							val records = scala.collection.mutable.ListBuffer[rClientLocation]()
 							val mergedData = scala.collection.mutable.ListBuffer[HeatData]()
-							records ++= rst
+							records ++= rst.filter(e => e.x >= 0.0 && e.x <= 1920.0 && e.y >= 0.0 && e.y <= 488.0)
 							while (records.nonEmpty) {
 								val sample = records.head
 								val xRange = sample.x.toInt / 10 * 10

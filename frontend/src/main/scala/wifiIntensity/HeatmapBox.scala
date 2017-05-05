@@ -19,7 +19,7 @@ class HeatmapBox extends Component[Div]{
 	val dateLabel = label(*.`for`:= "datePicker")("日期：")
 	val datePicker = input(*.cls:= "form-control", *.`type` := "date", *.id:= "datePicker",
 		*.value := "2017-04-27", *.onclick:= s"WdatePicker({readOnly:true})", *.marginRight:= "30px").render
-	val fromFile = select(*.id:= "fromFile", *.cls:= "form-control", option("从文件读取", *.value:= "1"), option("不从文件读取", *.value:= "0")).render
+	val fromFile = select(*.id:= "fromFile", *.cls:= "form-control", option("不从文件读取", *.value:= "0"), option("从文件读取", *.value:= "1")).render
 	val button = new HeatmapDrawer(datePicker, fromFile).render()
 	
 	datePicker.onchange = { e: Event =>

@@ -149,7 +149,6 @@ class BoxManager(wsClient: ActorRef) extends Actor with Stash{
 						val x1 = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
 						val y1 = boxInfo.filter(_.boxMac == records.head._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
 						val d1 = records.head._2
-						log.info(s"x1 y1:: $x1 $y1")
 						records.drop(1).foreach { e =>
 							val x = boxInfo.filter(_.boxMac == e._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._1
 							val y = boxInfo.filter(_.boxMac == e._1).map(e => (e.x, e.y)).headOption.getOrElse((0.0, 0.0))._2
