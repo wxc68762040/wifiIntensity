@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="SBT: io.circe:circe-scalajs_sjs0.6_2.11:0.6.1:jar">
+  <library name="sbt: io.circe:circe-scalajs_sjs0.6_2.11:0.6.1:jar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/io/circe/circe-scalajs_sjs0.6_2.11/0.6.1/circe-scalajs_sjs0.6_2.11-0.6.1.jar!/" />
     </CLASSES>

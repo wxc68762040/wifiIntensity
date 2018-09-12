@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="SBT: com.google.guava:guava:16.0.1:jar">
+  <library name="sbt: com.google.guava:guava:16.0.1:jar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/com/google/guava/guava/16.0.1/guava-16.0.1.jar!/" />
     </CLASSES>

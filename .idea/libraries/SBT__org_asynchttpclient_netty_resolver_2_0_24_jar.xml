@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="SBT: org.asynchttpclient:netty-resolver:2.0.24:jar">
+  <library name="sbt: org.asynchttpclient:netty-resolver:2.0.24:jar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/org/asynchttpclient/netty-resolver/2.0.24/netty-resolver-2.0.24.jar!/" />
     </CLASSES>

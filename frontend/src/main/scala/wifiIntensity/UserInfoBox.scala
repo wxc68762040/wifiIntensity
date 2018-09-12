@@ -94,10 +94,11 @@ class UserInfoBox extends Component[Div]{
 							td(box.boxName),
 							td(box.x),
 							td(box.y),
-							td(getDeleteBoxBtn(box.boxMac, index + 1))
+							td(button(*.cls := "btn btn-warning")("编辑").render ,getDeleteBoxBtn(box.boxMac, index + 1))
 						).render
 						tableBody.appendChild(boxDom)
 					}
+					tableBody.appendChild(span(button(*.cls := "btn btn-primary btn-lg")("添加新的探测源")).render)
 					tableDom.appendChild(tableHead)
 					tableDom.appendChild(tableBody)
 				} else {

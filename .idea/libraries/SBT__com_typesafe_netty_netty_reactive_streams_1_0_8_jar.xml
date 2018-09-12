@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="SBT: com.typesafe.netty:netty-reactive-streams:1.0.8:jar">
+  <library name="sbt: com.typesafe.netty:netty-reactive-streams:1.0.8:jar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/com/typesafe/netty/netty-reactive-streams/1.0.8/netty-reactive-streams-1.0.8.jar!/" />
     </CLASSES>

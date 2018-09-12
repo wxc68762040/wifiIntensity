@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="SBT: io.netty:netty-handler:4.0.42.Final:jar">
+  <library name="sbt: io.netty:netty-handler:4.0.42.Final:jar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/io/netty/netty-handler/4.0.42.Final/netty-handler-4.0.42.Final.jar!/" />
     </CLASSES>

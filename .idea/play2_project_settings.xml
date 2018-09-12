@@ -6,7 +6,7 @@
         <entry key="wifiIntensity">
           <value>
             <ProjectSettingsEntry>
-              <option name="playDistrPath" value="$USER_HOME$/.coursier/cache/v1/http/angel0%3A8078/com/typesafe/play/play_2.11/2.5.4/play_2.11-2.5.4.jar" />
+              <option name="playDistrPath" value="$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/com/typesafe/play/play_2.11/2.5.4/play_2.11-2.5.4.jar" />
             </ProjectSettingsEntry>
           </value>
         </entry>

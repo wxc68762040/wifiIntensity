@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="SBT: net.sf.ehcache:ehcache-core:2.6.11:jar">
+  <library name="sbt: net.sf.ehcache:ehcache-core:2.6.11:jar">
     <CLASSES>
       <root url="jar://$USER_HOME$/.coursier/cache/v1/https/repo1.maven.org/maven2/net/sf/ehcache/ehcache-core/2.6.11/ehcache-core-2.6.11.jar!/" />
     </CLASSES>

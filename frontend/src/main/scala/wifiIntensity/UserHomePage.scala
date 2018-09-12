@@ -17,9 +17,7 @@ object UserHomePage extends Component[Div]{
 	
 	val menuMap = Map(
 		"basicInfoShow" -> ("用户信息", new UserInfoBox().render()),
-		"heatmap" -> ("热度分析", new HeatmapBox().render()),
-		"test2" -> ("测试2", div().render),
-		"test3" -> ("测试3", div().render)
+		"heatmap" -> ("热度分析", new HeatmapBox().render())
 	)
 	
 	val nameBox = div(*.cls:= "name-box").render
